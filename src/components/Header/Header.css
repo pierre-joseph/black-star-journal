@@ -1,0 +1,74 @@
+.siteHeader {
+    background-color: #FFA43C;
+    color: #081014;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid rgba(8,16,20,0.06);
+}
+.headerInner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.siteLogo {
+    width: 140px;
+    height: auto;
+    display: block;
+}
+.siteNav {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.navLink {
+    color: #081014;
+    text-decoration: none;
+    font-weight: 700;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    transition: background 120ms ease, transform 120ms ease, opacity 120ms ease;
+    opacity: 0.95;
+}
+.navLink:hover {
+    background: rgba(8,16,20,0.06);
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+/* compact nav on small screens */
+@media (max-width: 600px) {
+    .siteLogo { width: 110px; }
+    .siteNav { gap: 0.5rem; }
+    .navLink { padding: 0.25rem 0.4rem; font-size: 0.95rem; }
+}
+
+.separator {
+    display: inline-block;
+    margin-left: 0.6rem;
+    vertical-align: middle;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 800;
+    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #081014;
+    opacity: 0.98;
+    transition: transform 140ms ease, opacity 140ms ease;
+    pointer-events: none; /* decorative */
+}
+
+/* small decorative accent on hover of the header (logo + text feel cohesive) */
+.headerInner:hover .separator {
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+/* hide the text on very small screens to preserve space for the logo */
+@media (max-width: 420px) {
+    .separator { display: none; }
+}

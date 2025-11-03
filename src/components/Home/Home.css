@@ -1,24 +1,155 @@
 .homeContainer {
-    min-height: 100vh;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    background-color: #fff;
+    color: #0b0b0b;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Hero */
+.hero {
+    padding: 3.25rem 1rem;
+    display: flex;
+    justify-content: center;
+}
+.heroInner {
+    max-width: 1100px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* ensure spacing between text and issue card */
+}
+.heroContent {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    background-color: #FFA43C;
+    align-items: center; /* center text */
+    text-align: center;  /* center paragraphs and CTAs */
+    gap: 0.85rem;
     padding: 0 1rem;
 }
 
-.homeLogo {
-    width: 160px;
-    height: auto;
-    margin-bottom: 1rem;
+.homeTitle {
+    font-size: clamp(2rem, 4.5vw, 3.75rem);
+    line-height: 1.02;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: -0.02em;
+    /* warm gradient text */
+    background: linear-gradient(90deg, #081014 0%, #0b0b0b 40%, #FFA43C 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 6px 18px rgba(8,16,20,0.06);
+    position: relative;
 }
 
-.homeTitle {
-    color: #0b0b0b;
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
+/* subtle decorative underline */
+.homeTitle::after{
+    content: "";
+    display: block;
+    width: 56px;
+    height: 4px;
+    background: rgba(255,164,60,0.95); /* #FFA43C */
+    border-radius: 4px;
+    margin: 12px auto 0;
+    box-shadow: 0 6px 18px rgba(255,164,60,0.12);
+}
+
+.homeSubtitle {
     margin: 0;
-    text-align: center;
+    color: rgba(8,16,20,0.85);
+    max-width: 66ch;
+    font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    line-height: 1.55;
+    font-weight: 600;
+    opacity: 0.98;
+}
+
+/* ensure CTAs remain centered under the subtitle */
+.ctaRow {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+/* CTAs */
+.btn {
+    display: inline-block;
+    text-decoration: none;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+    border: none;
+}
+.btn.primary {
+    background: #081014;
+    color: #fff;
+    box-shadow: 0 8px 22px rgba(8,16,20,0.12);
+}
+.btn.ghost {
+    background: transparent;
+    color: #081014;
+    border: 1px solid rgba(8,16,20,0.08);
+}
+.btn:hover { transform: translateY(-3px); }
+
+/* large, centered issue card under the title */
+.issueCard {
+    width: 420px;              /* much larger */
+    max-width: 62%;
+    margin: 1.25rem auto 0;    /* center under title */
+    display: block;
+    border-radius: 14px;
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: 0 20px 50px rgba(8,16,20,0.12);
+    transition: transform 220ms ease, box-shadow 220ms ease;
+    position: relative;
+    background: #fff;
+}
+.issueCard:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 28px 64px rgba(8,16,20,0.16);
+}
+.issueThumb {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    aspect-ratio: 2/3; /* taller, stronger presence */
+    background: linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.01));
+}
+
+/* badge overlay */
+.issueBadge {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    background: rgba(8,16,20,0.92);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.45rem 0.7rem;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+}
+
+/* Responsive: scale down nicely on small screens (no hiding) */
+@media (max-width: 900px) {
+    .issueCard { width: 360px; max-width: 72%; }
+}
+@media (max-width: 720px) {
+    .homeTitle { font-size: 1.75rem; }
+    .hero { padding: 2rem 0.75rem; }
+    .ctaRow { flex-direction: column; gap: 0.5rem; }
+    .issueCard { width: 92%; max-width: 92%; margin-top: 1rem; }
 }
