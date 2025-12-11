@@ -1,3 +1,8 @@
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import stockTexture from '@assets/stock_images/abstract_paper_textu_7daad0b5.jpg';
 import heroImage from '@assets/generated_images/pink_room_illustration_with_mirror_and_shelf.png';
 
 export default function Home() {
