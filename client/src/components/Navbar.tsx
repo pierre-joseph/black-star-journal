@@ -4,6 +4,8 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+import logo from '@assets/generated_images/black_star_journal_logo_in_orange_and_black.png';
+
 export function Navbar() {
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -17,10 +19,15 @@ export function Navbar() {
 
   return (
     <nav className="w-full border-b border-border bg-background sticky top-0 z-50">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="font-heading font-black text-2xl tracking-tighter hover:opacity-80 transition-opacity">
-            THE BLACK STAR JOURNAL
+      <div className="container mx-auto px-4 h-24 flex items-center justify-between">
+        {/* Logo - Top Left Corner */}
+        <Link href="/">
+          <a className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <img src={logo} alt="The Black Star Journal" className="h-16 w-auto" />
+            <span className="font-heading font-black text-2xl tracking-tighter hidden lg:block">
+              THE BLACK STAR JOURNAL
+            </span>
+          </a>
         </Link>
 
         {/* Desktop Nav */}

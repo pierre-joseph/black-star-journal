@@ -23,7 +23,7 @@ export default function Home() {
         <div className="relative z-10 max-w-4xl mx-auto space-y-6">
           <h1 className="font-heading font-black text-6xl md:text-8xl lg:text-9xl tracking-tighter leading-none animate-in fade-in slide-in-from-bottom-8 duration-1000">
             THE<br />
-            BLACK<br />
+            <span className="text-primary">BLACK</span><br />
             STAR<br />
             JOURNAL
           </h1>
@@ -31,7 +31,7 @@ export default function Home() {
             "The BSJ connects the vast collection of Black voices on Brown’s campus to build a stronger and better-informed community."
           </p>
           <div className="pt-8">
-            <Button size="lg" className="rounded-full px-8 font-bold tracking-wide">
+            <Button size="lg" className="rounded-full px-8 font-bold tracking-wide bg-primary text-primary-foreground hover:bg-primary/90">
               READ THE LATEST ISSUE
             </Button>
           </div>
