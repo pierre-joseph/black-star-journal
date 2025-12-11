@@ -1,39 +1,37 @@
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import stockHero from '@assets/stock_images/classic_newspaper_ed_8e30fe15.jpg';
-import stockTexture from '@assets/stock_images/abstract_paper_textu_7daad0b5.jpg';
+import heroImage from '@assets/generated_images/pink_room_illustration_with_mirror_and_shelf.png';
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-12 pb-20">
+    <div className="flex flex-col gap-12 pb-20 pt-10">
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex flex-col items-center justify-center text-center px-4 overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={stockHero} 
-            alt="Newspaper Background" 
-            className="w-full h-full object-cover opacity-20 grayscale contrast-125"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-        </div>
+      <section className="container mx-auto px-4">
+        <div className="grid md:grid-cols-12 gap-8 items-start">
+          
+          {/* Left Column: Text */}
+          <div className="md:col-span-5 flex flex-col justify-center h-full pt-20">
+            <h1 className="font-sans font-black text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.9] text-black mb-8">
+              THE<br />
+              BLACK<br />
+              STAR<br />
+              JOURNAL
+            </h1>
+            
+            <div className="mt-auto pt-12">
+              <p className="font-serif text-lg leading-relaxed text-gray-800 max-w-md">
+                The BSJ connects the vast collection of Black voices on Brown’s campus to build a stronger and better-informed community.
+              </p>
+            </div>
+          </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto space-y-6">
-          <h1 className="font-heading font-black text-6xl md:text-8xl lg:text-9xl tracking-tighter leading-none animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            THE<br />
-            <span className="text-primary">BLACK</span><br />
-            STAR<br />
-            JOURNAL
-          </h1>
-          <p className="font-serif text-xl md:text-2xl italic text-muted-foreground max-w-2xl mx-auto">
-            "The BSJ connects the vast collection of Black voices on Brown’s campus to build a stronger and better-informed community."
-          </p>
-          <div className="pt-8">
-            <Button size="lg" className="rounded-full px-8 font-bold tracking-wide bg-primary text-primary-foreground hover:bg-primary/90">
-              READ THE LATEST ISSUE
-            </Button>
+          {/* Right Column: Image */}
+          <div className="md:col-span-7">
+            <div className="rounded-xl overflow-hidden shadow-sm">
+              <img 
+                src={heroImage} 
+                alt="Artistic illustration of a room" 
+                className="w-full h-auto object-cover aspect-[4/3]"
+              />
+            </div>
           </div>
         </div>
       </section>
