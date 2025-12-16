@@ -1,13 +1,11 @@
-import { Link, useLocation } from "wouter";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-import logo from '@assets/generated_images/geometric_star_logo_black_and_yellow.png';
-
 export function Navbar() {
-  const [location] = useLocation();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
@@ -22,10 +20,8 @@ export function Navbar() {
     <nav className="w-full bg-background pt-8 pb-4">
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo - Top Left Corner */}
-        <Link href="/">
-          <a className="hover:opacity-80 transition-opacity">
-            <img src={logo} alt="The Black Star Journal" className="h-16 w-auto" />
-          </a>
+        <Link to="/" className="hover:opacity-80 transition-opacity">
+          <img src="/images/logo.png" alt="The Black Star Journal" className="h-16 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
@@ -33,13 +29,13 @@ export function Navbar() {
           {navLinks.map((link) => (
             <Link 
               key={link.href} 
-              href={link.href}
+              to={link.href}
               className={cn(
                 "text-xs font-bold tracking-widest uppercase hover:text-primary transition-colors",
-                location === link.href ? "text-foreground" : "text-muted-foreground"
+                location.pathname === link.href ? "text-foreground" : "text-muted-foreground"
               )}
             >
-                {link.label}
+              {link.label}
             </Link>
           ))}
           <Button size="sm" className="font-bold uppercase tracking-wider ml-4 rounded-none px-6 text-xs">
@@ -62,14 +58,14 @@ export function Navbar() {
           {navLinks.map((link) => (
             <Link 
               key={link.href} 
-              href={link.href}
+              to={link.href}
               className={cn(
                 "block text-lg font-semibold py-2",
-                location === link.href ? "text-primary" : "text-muted-foreground"
+                location.pathname === link.href ? "text-primary" : "text-muted-foreground"
               )}
               onClick={() => setIsOpen(false)}
             >
-                {link.label}
+              {link.label}
             </Link>
           ))}
           <Button className="w-full font-bold">SUPPORT US</Button>

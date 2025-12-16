@@ -1,18 +1,20 @@
-import teamImage from '@assets/stock_images/modern_diverse_edito_94570c80.jpg';
-
 export default function About() {
   return (
     <div className="pb-20">
       {/* Hero */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <img 
-          src={teamImage} 
+          src="/images/about_us_banner.png" 
           alt="The Team" 
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/60" />
-        <div className="relative z-10 text-center text-white space-y-4 px-4">
-          <h1 className="font-heading font-black text-5xl md:text-7xl">ABOUT US</h1>
+        <div className="relative z-10 text-center space-y-4 px-4">
+          <img 
+            src="/images/who_are_us.png" 
+            alt="Who We Are" 
+            className="max-w-3xl mx-auto w-full"
+          />
           <p className="font-serif text-xl max-w-2xl mx-auto text-gray-200">
             The voices, the stories, and the people behind The Black Star Journal.
           </p>
