@@ -1,9 +1,39 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import PDFViewer from "@/components/PDFViewer";
+
+interface Media {
+  url: string;
+  alt?: string;
+}
+
+interface Issue {
+  id: string;
+  title: string;
+  slug: string;
+  issueNumber: number;
+  publishDate: string;
+  coverImage: Media;
+  fullPdf: Media;
+  description?: string;
+}
 
 export default function Home() {
+  const [showPDF, setShowPDF] = useState(false);
+  const [issues, setIssues] = useState<Issue[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/issues")
+      .then(res => res.json())
+      .then(data => {
+        // Sort by issue number in descending order (newest first)
+        const sortedIssues = [...data.docs].sort((a, b) => b.issueNumber - a.issueNumber);
+        setIssues(sortedIssues);
+      });
+  }, []);
   return (
     <div className="flex flex-col gap-12 pb-20 pt-10">
       {/* Hero Section */}
@@ -12,16 +42,16 @@ export default function Home() {
           
           {/* Left Column: Text */}
           <div className="md:col-span-5 flex flex-col justify-center h-full pt-20">
-            <h1 className="font-sans font-black text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.9] text-black mb-8">
+            <h1 className="font-sans font-black text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.9] text-black mb-6">
               THE<br />
               BLACK<br />
               STAR<br />
               JOURNAL
             </h1>
             
-            <div className="mt-auto pt-12">
+            <div className="mt-auto">
               <p className="font-serif text-lg leading-relaxed text-gray-800 max-w-md">
-                The BSJ connects the vast collection of Black voices on Brown’s campus to build a stronger and better-informed community.
+                Amplifying Black voices. Celebrating Black excellence. Building community at Brown.
               </p>
             </div>
           </div>
@@ -43,14 +73,22 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h2 className="font-heading font-bold text-4xl tracking-tight">Our Mission</h2>
-            <div className="w-24 h-1 bg-primary" />
-            <p className="font-serif text-lg leading-relaxed text-muted-foreground">
-              We strive to amplify the voices that often go unheard. Through rigorous journalism, creative storytelling, and cultural commentary, we document the Black experience at Brown University and beyond.
+            <div className="space-y-2">
+              <p className="text-sm font-semibold tracking-wider text-[#f97316] uppercase">
+                Established 2021
+              </p>
+              <h2 className="font-heading font-bold text-4xl tracking-tight">Our Mission</h2>
+              <div className="w-24 h-1 bg-primary" />
+            </div>
+            <p className="font-serif text-xl italic leading-relaxed">
+              "The BSJ is a source of Black news, life, existence, and culture where Black voices on Brown's campus build community."
             </p>
-            <Button variant="outline" className="group">
-              Learn More About Us <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <p className="font-serif text-lg leading-relaxed text-muted-foreground">
+              Founded in 2021, we are more than a publication—we are a safe space and platform dedicated to documenting the Black experience at Brown University. Through journalism, storytelling, and creative expression, we hold space for joy, resilience, struggle, and triumph.
+            </p>
+            <p className="font-serif text-lg leading-relaxed text-muted-foreground">
+              Every piece we publish is an act of reclamation and representation, building an archive of our own stories, told with the authenticity and care they deserve.
+            </p>
           </div>
           <div className="relative aspect-square md:aspect-video rounded-xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
             <img 
@@ -68,40 +106,39 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="text-sm font-bold tracking-widest uppercase text-primary mb-2 block">Current Edition</span>
-            <h2 className="font-heading font-black text-4xl md:text-5xl">The Moonflower Issue</h2>
+            <h2 className="font-heading font-black text-4xl md:text-5xl">BSJ ISSUE #13</h2>
           </div>
-
-          <Carousel className="w-full max-w-5xl mx-auto">
-            <CarouselContent className="-ml-4">
-              {[1, 2, 3, 4, 5].map((_, index) => (
-                <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1">
-                    <Card className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow group cursor-pointer h-full">
-                      <div className="aspect-[3/4] overflow-hidden relative">
-                        <img 
-                          src={`https://placehold.co/600x800/1a1a1a/FFF?text=Article+${index + 1}`} 
-                          alt={`Article ${index + 1}`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                          <span className="text-white font-bold text-sm">Read Article</span>
-                        </div>
-                      </div>
-                      <CardContent className="p-6 bg-card">
-                        <span className="text-xs font-bold text-primary uppercase tracking-wider">Culture</span>
-                        <h3 className="font-serif font-bold text-xl mt-2 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                          Echoes of Ancestry: Navigating Heritage in Modern Times
-                        </h3>
-                        <p className="text-sm text-muted-foreground">By Jordan Smith</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          
+          {!showPDF ? (
+            <div className="flex flex-col items-center gap-6 mb-12">
+              <img src={issues[0]?.coverImage.url} alt="Cover of the current issue" className="h-[800px] object-cover shadow-2xl" />
+              <Button 
+                onClick={() => setShowPDF(true)}
+                disabled={!issues[0]?.fullPdf?.url}
+                className="bg-[#f97316] hover:bg-[#ea580c] text-white font-bold px-8 py-6 text-lg"
+              >
+                Open & Read
+              </Button>
+            </div>
+          ) : (
+            <div className="max-w-7xl mx-auto">
+              {issues[0]?.fullPdf?.url && (
+                <PDFViewer 
+                  pdfUrl={issues[0].fullPdf.url} 
+                  onClose={() => setShowPDF(false)} 
+                />
+              )}
+              <div className="text-center mt-6">
+                <Button 
+                  onClick={() => setShowPDF(false)}
+                  variant="outline"
+                  className="font-semibold"
+                >
+                  Close Reader
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>

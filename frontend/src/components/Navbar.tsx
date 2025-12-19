@@ -10,7 +10,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: "HOME" },
-    { href: "/about", label: "ABOUT US" },
+    { href: "/team", label: "OUR TEAM" },
     { href: "/sections", label: "SECTIONS" },
     { href: "/archives", label: "ARCHIVES" },
     { href: "/contact", label: "CONTACT US" },
@@ -38,9 +38,6 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Button size="sm" className="font-bold uppercase tracking-wider ml-4 rounded-none px-6 text-xs">
-            SUPPORT US
-          </Button>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -68,7 +65,6 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Button className="w-full font-bold">SUPPORT US</Button>
         </div>
       )}
     </nav>
