@@ -132,9 +132,9 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
           >
             <div className="relative flex gap-2 shadow-2xl">
               {!isSinglePage && (
-                <div className="absolute left-1/2 top-0 bottom-0 w-12 -ml-6
-                                bg-gradient-to-r from-stone-800/20 via-stone-900/40 to-stone-800/20
-                                z-10 pointer-events-none shadow-inner" />
+                <div className="absolute left-1/2 top-0 bottom-0 w-2 -ml-1
+                                bg-white
+                                z-10 pointer-events-none shadow-sm" />
               )}
 
               <div className="bg-amber-50 shadow-2xl">
