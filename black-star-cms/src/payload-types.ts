@@ -154,6 +154,10 @@ export interface Media {
   id: string;
   alt: string;
   caption?: string | null;
+  /**
+   * Page number to navigate to in PDF
+   */
+  page?: number | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -326,6 +330,7 @@ export interface UsersSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  page?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

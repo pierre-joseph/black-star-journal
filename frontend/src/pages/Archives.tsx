@@ -53,10 +53,14 @@ export default function Archives() {
 
   return (
     <div className="min-h-screen pb-20 overflow-hidden">
-      <section className="bg-black text-white py-24 text-center">
-        <div className="container mx-auto px-4">
-          <h1 className="font-heading font-black text-6xl md:text-8xl mb-6">ARCHIVES</h1>
-          <p className="font-serif text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto">
+      <section className="relative bg-black text-white py-24 text-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-100"
+          style={{ backgroundImage: 'url(/images/abstract_paper.jpg)' }}
+        />
+        <div className="container mx-auto px-4 relative z-10">
+          <h1 className="font-heading font-bold text-4xl md:text-7xl mb-6 text-black">ARCHIVES</h1>
+          <p className="font-serif text-xl md:text-2xl text-black max-w-2xl mx-auto">
             A history of our stories, our struggles, and our triumphs.
           </p>
         </div>
@@ -95,7 +99,7 @@ export default function Archives() {
       <section className="py-20 border-b border-border bg-muted/20">
         <div className="container mx-auto px-4">
           <h2 className="text-center font-heading font-bold text-2xl mb-12 uppercase tracking-widest">
-            {selectedPdf ? 'Browse Other Issues' : 'Past Issues'}
+            {selectedPdf ? 'Browse Other BSJ Issues' : 'Past BSJ Issues'}
           </h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

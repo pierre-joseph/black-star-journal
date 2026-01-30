@@ -11,11 +11,12 @@ import 'react-pdf/dist/Page/TextLayer.css';
 interface PDFViewerProps {
   pdfUrl: string;
   onClose: () => void;
+  initialPage?: number;
 }
 
-export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
+export default function PDFViewer({ pdfUrl, initialPage = 1 }: PDFViewerProps) {
   const [numPages, setNumPages] = useState(0);
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(initialPage);
   const [scale, setScale] = useState(0.6);
 
   useEffect(() => {
@@ -77,6 +78,48 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
     : pageNumber - 1;
   const rightPageNum = isSinglePage ? null : leftPageNum + 1;
 
+  // Calculate all pages to render (current + adjacent spreads for instant navigation)
+  const pagesToRender = useMemo(() => {
+    const pages = new Set<number>();
+    
+    // Current spread
+    pages.add(leftPageNum);
+    if (rightPageNum && rightPageNum <= numPages) pages.add(rightPageNum);
+    
+    // Previous spread
+    if (pageNumber > 1) {
+      if (pageNumber === 2) {
+        pages.add(1);
+      } else if (pageNumber === numPages && numPages > 1) {
+        const prevLeft = numPages - 2;
+        if (prevLeft >= 1) {
+          pages.add(prevLeft);
+          if (prevLeft + 1 <= numPages) pages.add(prevLeft + 1);
+        }
+      } else {
+        const prevLeft = Math.max(1, leftPageNum - 2);
+        pages.add(prevLeft);
+        if (prevLeft + 1 <= numPages && prevLeft !== 1) pages.add(prevLeft + 1);
+      }
+    }
+    
+    // Next spread
+    if (pageNumber < numPages) {
+      if (pageNumber === 1) {
+        if (numPages >= 2) pages.add(2);
+        if (numPages >= 3) pages.add(3);
+      } else if (pageNumber === numPages - 1 && numPages > 1) {
+        pages.add(numPages);
+      } else {
+        const nextLeft = isSinglePage ? pageNumber + 1 : leftPageNum + 2;
+        if (nextLeft <= numPages) pages.add(nextLeft);
+        if (nextLeft + 1 <= numPages) pages.add(nextLeft + 1);
+      }
+    }
+    
+    return Array.from(pages).sort((a, b) => a - b);
+  }, [pageNumber, numPages, leftPageNum, rightPageNum, isSinglePage]);
+
   return (
     <div className="w-full bg-gradient-to-b from-amber-50/50 to-stone-100 rounded-xl shadow-2xl overflow-hidden">
       <div className="relative flex items-center justify-center p-8 min-h-[600px] bg-gradient-to-b from-stone-50 to-amber-50/30">
@@ -137,27 +180,37 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
                                 z-10 pointer-events-none shadow-sm" />
               )}
 
-              <div className="bg-amber-50 shadow-2xl">
-                <Page
-                  pageNumber={leftPageNum}
-                  scale={scale}
-                  renderTextLayer
-                  renderAnnotationLayer
-                />
-              </div>
-
-              {!isSinglePage &&
-                rightPageNum &&
-                rightPageNum <= numPages && (
-                  <div className="bg-amber-50 shadow-2xl">
+              {/* Render all needed pages, show/hide based on current spread */}
+              {pagesToRender.map((num) => {
+                const isCurrentLeft = num === leftPageNum;
+                const isCurrentRight = num === rightPageNum;
+                const isVisible = isCurrentLeft || isCurrentRight;
+                
+                if (!isVisible) {
+                  // Preload hidden pages
+                  return (
+                    <div key={num} className="absolute opacity-0 pointer-events-none w-0 h-0 overflow-hidden">
+                      <Page
+                        pageNumber={num}
+                        scale={scale}
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
+                      />
+                    </div>
+                  );
+                }
+                
+                return (
+                  <div key={num} className="bg-amber-50 shadow-2xl">
                     <Page
-                      pageNumber={rightPageNum}
+                      pageNumber={num}
                       scale={scale}
                       renderTextLayer
                       renderAnnotationLayer
                     />
                   </div>
-                )}
+                );
+              })}
             </div>
           </Document>
 

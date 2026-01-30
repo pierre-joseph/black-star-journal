@@ -12,8 +12,7 @@ export function Navbar() {
     { href: "/", label: "HOME" },
     { href: "/team", label: "OUR TEAM" },
     { href: "/sections", label: "SECTIONS" },
-    { href: "/archives", label: "ARCHIVES" },
-    { href: "/contact", label: "CONTACT US" },
+    { href: "/archives", label: "ARCHIVES" }
   ];
 
   return (

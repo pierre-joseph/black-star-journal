@@ -8,6 +8,7 @@ import PDFViewer from "@/components/PDFViewer";
 interface Media {
   url: string;
   alt?: string;
+  page?: number;
 }
 
 interface Issue {
@@ -24,6 +25,8 @@ interface Issue {
 export default function Home() {
   const [showPDF, setShowPDF] = useState(false);
   const [issues, setIssues] = useState<Issue[]>([]);
+  const [coverImage, setCoverImage] = useState<Media[]>([]);
+  const [magazineCovers, setMagazineCovers] = useState<Media[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/issues")
@@ -34,6 +37,20 @@ export default function Home() {
         setIssues(sortedIssues);
       });
   }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/media?where[alt][equals]=BSJ8CoverImage")
+      .then(res => res.json())
+      .then(data => setCoverImage(data.docs))
+  }, []);
+
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/media?where[alt][equals]=AfricanSunMagazineCovers")
+      .then(res => res.json())
+      .then(data => setMagazineCovers(data.docs))
+  }, []);
+
   return (
     <div className="flex flex-col gap-12 pb-20 pt-10">
       {/* Hero Section */}
@@ -60,8 +77,8 @@ export default function Home() {
           <div className="md:col-span-7">
             <div className="rounded-xl overflow-hidden shadow-sm">
               <img 
-                src="/images/pink_room.png" 
-                alt="Artistic illustration of a room" 
+                src="/images/pink_room.png"
+                alt="Image of Pink Room" 
                 className="w-full h-auto object-cover aspect-[4/3]"
               />
             </div>
@@ -92,8 +109,8 @@ export default function Home() {
           </div>
           <div className="relative aspect-square md:aspect-video rounded-xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
             <img 
-              src="/images/abstract_paper.jpg" 
-              alt="Abstract Texture" 
+              src={coverImage[0]?.url} 
+              alt="BSJ Issue 6 Cover Image" 
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
@@ -125,6 +142,7 @@ export default function Home() {
               {issues[0]?.fullPdf?.url && (
                 <PDFViewer 
                   pdfUrl={issues[0].fullPdf.url} 
+                  initialPage={1}
                   onClose={() => setShowPDF(false)} 
                 />
               )}

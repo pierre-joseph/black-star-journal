@@ -24,5 +24,12 @@ export const Media: CollectionConfig = {
       name: 'caption',
       type: 'textarea',
     },
+    {
+      name: 'page',
+      type: 'number',
+      admin: {
+        description: 'Page number to navigate to in PDF',
+      },
+    },
   ],
 }
