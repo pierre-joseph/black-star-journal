@@ -12,6 +12,7 @@ export function Navbar() {
     { href: "/", label: "HOME" },
     { href: "/team", label: "OUR TEAM" },
     { href: "/sections", label: "SECTIONS" },
+    { href: "/bsjissues", label: "BSJ ISSUES" },
     { href: "/archives", label: "ARCHIVES" }
   ];
 

@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import Home from "@/pages/Home";
 import Team from "@/pages/Team";
 import Sections from "@/pages/Sections";
+import BSJIssues from "./pages/BSJIssues";
 import Archives from "@/pages/Archives";
 import NotFound from "@/pages/not-found";
 
@@ -20,6 +21,7 @@ function Router() {
             <Route path="/" element={<Home />} />
             <Route path="/team" element={<Team />} />
             <Route path="/sections" element={<Sections />} />
+            <Route path="/bsjissues" element={<BSJIssues />} />
             <Route path="/archives" element={<Archives />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

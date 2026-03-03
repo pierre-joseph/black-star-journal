@@ -1,9 +1,14 @@
 import type { CollectionConfig } from 'payload'
 
 export const Issues: CollectionConfig = {
-  slug: 'issues',
+  slug: 'bsjissues',
+  dbName: 'issues', // keep existing MongoDB collection — no data migration needed
+  labels: {
+    singular: 'BSJ Issue',
+    plural: 'BSJ Issues',
+  },
   access: {
-    read: () => true, // ✅ allow anyone to read
+    read: () => true,
   },
   admin: {
     useAsTitle: 'title',

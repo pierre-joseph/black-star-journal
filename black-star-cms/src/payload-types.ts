@@ -69,7 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
-    issues: Issue;
+    bsjissues: Bsjissue;
     articles: Article;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -80,7 +80,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    issues: IssuesSelect<false> | IssuesSelect<true>;
+    bsjissues: BsjissuesSelect<false> | BsjissuesSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -172,9 +172,9 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "issues".
+ * via the `definition` "bsjissues".
  */
-export interface Issue {
+export interface Bsjissue {
   id: string;
   title: string;
   slug: string;
@@ -194,7 +194,7 @@ export interface Issue {
 export interface Article {
   id: string;
   title: string;
-  issue: string | Issue;
+  issue: string | Bsjissue;
   author: string;
   publishDate: string;
   content: {
@@ -250,8 +250,8 @@ export interface PayloadLockedDocument {
         value: string | Media;
       } | null)
     | ({
-        relationTo: 'issues';
-        value: string | Issue;
+        relationTo: 'bsjissues';
+        value: string | Bsjissue;
       } | null)
     | ({
         relationTo: 'articles';
@@ -345,9 +345,9 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "issues_select".
+ * via the `definition` "bsjissues_select".
  */
-export interface IssuesSelect<T extends boolean = true> {
+export interface BsjissuesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   issueNumber?: T;

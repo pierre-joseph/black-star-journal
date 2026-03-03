@@ -29,7 +29,7 @@ export default function Home() {
   const [magazineCovers, setMagazineCovers] = useState<Media[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/issues")
+    fetch("http://localhost:3000/api/bsjissues")
       .then(res => res.json())
       .then(data => {
         // Sort by issue number in descending order (newest first)
@@ -123,7 +123,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="text-sm font-bold tracking-widest uppercase text-primary mb-2 block">Current Edition</span>
-            <h2 className="font-heading font-black text-4xl md:text-5xl">BSJ ISSUE #13</h2>
+            <h2 className="font-heading font-black text-4xl md:text-5xl">BSJ ISSUE #{issues[0]?.issueNumber}</h2>
           </div>
           
           {!showPDF ? (

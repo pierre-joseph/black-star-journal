@@ -14,7 +14,7 @@ export const Articles: CollectionConfig = {
     {
       name: 'issue',
       type: 'relationship',
-      relationTo: 'issues',
+      relationTo: 'bsjissues',
       required: true,
     },
     {
