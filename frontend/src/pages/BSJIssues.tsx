@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PDFViewer from "@/components/PDFViewer";
 import { Button } from "@/components/ui/button";
+import { backendApiUrl } from "@/lib/api";
 
 interface Media {
   url: string;
@@ -24,7 +25,7 @@ export default function BSJIssues() {
 
   // Fetch issues
   useEffect(() => {
-    fetch("http://localhost:3000/api/bsjissues?limit=100")
+    fetch(backendApiUrl("/api/bsjissues?limit=100"))
       .then(res => res.json())
       .then(data => {
         const sortedIssues = [...data.docs].sort(

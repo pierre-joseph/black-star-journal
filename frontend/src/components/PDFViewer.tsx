@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Document, Page } from 'react-pdf';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { resolveBackendAssetUrl } from '@/lib/api';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -26,7 +27,7 @@ export default function PDFViewer({ pdfUrl, initialPage = 1 }: PDFViewerProps) {
     return () => window.removeEventListener('error', onErr);
   }, []);
 
-  const file = useMemo(() => ({ url: pdfUrl }), [pdfUrl]);
+  const file = useMemo(() => ({ url: resolveBackendAssetUrl(pdfUrl) }), [pdfUrl]);
 
   const options = useMemo(() => {
     const wasmUrl =

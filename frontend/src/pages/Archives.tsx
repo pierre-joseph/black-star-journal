@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, Calendar } from "lucide-react";
 import PDFViewer from "@/components/PDFViewer";
 import { Button } from "@/components/ui/button";
+import { backendApiUrl } from "@/lib/api";
 
 // ─── Publication Profiles ──────────────────────────────────────────────────────
 
@@ -86,13 +87,13 @@ export default function Archives() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/media?where[alt][equals]=AfricanSunMagazineCovers")
+    fetch(backendApiUrl("/api/media?where[alt][equals]=AfricanSunMagazineCovers"))
       .then(res => res.json())
       .then(data => setMagazineCovers(data.docs))
    }, []);
 
   useEffect(() => {
-      fetch("http://localhost:3000/api/africansun?sort=-publishDate&limit=200&depth=2")
+      fetch(backendApiUrl("/api/africansun?sort=-publishDate&limit=200&depth=2"))
         .then(res => res.json())
         .then(data => {
           // Sort by publish date in descending order (newest first)

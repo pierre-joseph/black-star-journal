@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import PDFViewer from "@/components/PDFViewer";
+import { backendApiUrl } from "@/lib/api";
 
 interface Media {
   url: string;
@@ -29,7 +30,7 @@ export default function Home() {
   const [magazineCovers, setMagazineCovers] = useState<Media[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/bsjissues")
+    fetch(backendApiUrl("/api/bsjissues"))
       .then(res => res.json())
       .then(data => {
         // Sort by issue number in descending order (newest first)
@@ -39,14 +40,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/media?where[alt][equals]=BSJ8CoverImage")
+    fetch(backendApiUrl("/api/media?where[alt][equals]=BSJ8CoverImage"))
       .then(res => res.json())
       .then(data => setCoverImage(data.docs))
   }, []);
 
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/media?where[alt][equals]=AfricanSunMagazineCovers")
+    fetch(backendApiUrl("/api/media?where[alt][equals]=AfricanSunMagazineCovers"))
       .then(res => res.json())
       .then(data => setMagazineCovers(data.docs))
   }, []);
