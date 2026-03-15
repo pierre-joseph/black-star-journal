@@ -5,6 +5,8 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { s3Storage } from '@payloadcms/storage-s3'
+
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Issues } from './collections/Issues'
@@ -18,6 +20,27 @@ const dirname = path.dirname(filename)
 const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 const frontendURL = process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5000'
 
+const parseOrigins = (value?: string): string[] => {
+  if (!value) return []
+
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+}
+
+const allowedOrigins = Array.from(
+  new Set([
+    ...parseOrigins(process.env.FRONTEND_URL),
+    ...parseOrigins(process.env.CORS_ORIGINS),
+    frontendURL,
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
+  ]),
+)
+
+const csrfOrigins = Array.from(new Set([...allowedOrigins, serverURL]))
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -30,15 +53,9 @@ export default buildConfig({
   serverURL: serverURL,
 
   // Update CORS and CSRF to trust both your local and production URLs
-  cors: [
-    frontendURL,
-    serverURL,
-  ],
+  cors: allowedOrigins,
 
-  csrf: [
-    frontendURL,
-    serverURL,
-  ],
+  csrf: csrfOrigins,
   
   collections: [Users, Media, Issues, Articles, AfricanSun],
   editor: lexicalEditor(),
@@ -50,5 +67,21 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    s3Storage({
+      collections: {
+        // This tells Payload to send all 'media' uploads to Cloudflare
+        'media': true, 
+      },
+      bucket: process.env.S3_BUCKET || '',
+      config: {
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+        },
+        region: 'auto',
+        endpoint: process.env.S3_ENDPOINT || '',
+      },
+    }),
+  ],
 })

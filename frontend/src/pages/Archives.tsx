@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, Calendar } from "lucide-react";
 import PDFViewer from "@/components/PDFViewer";
 import { Button } from "@/components/ui/button";
-import { backendApiUrl } from "@/lib/api";
+import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
 
 // ─── Publication Profiles ──────────────────────────────────────────────────────
 
@@ -49,6 +49,7 @@ const PUBLICATIONS_INFO = [
 ];
 
 interface Media {
+  filename?: string;
   url?: string;
   alt?: string;
 }
@@ -77,13 +78,12 @@ export default function Archives() {
 
   const getPdfUrl = (issue: AfricanSunIssue): string | undefined => {
     if (!issue.fullPdf) return undefined;
-    if (typeof issue.fullPdf === "string") return undefined;
-    return issue.fullPdf.url;
+    return resolveR2AssetUrl(issue.fullPdf);
   };
 
-  const getCoverImage = (issue: AfricanSunIssue): Media | undefined => {
-    if (!issue.coverImage || typeof issue.coverImage === "string") return undefined;
-    return issue.coverImage;
+  const getCoverImageUrl = (issue: AfricanSunIssue): string | undefined => {
+    if (!issue.coverImage) return undefined;
+    return resolveR2AssetUrl(issue.coverImage);
   };
 
   useEffect(() => {
@@ -193,10 +193,10 @@ export default function Archives() {
                   </div>
                 </div>
                 <div className={`flex items-center justify-center ${i % 2 === 1 ? "md:order-1" : ""}`}>
-                  {pub.id === "african-sun" && magazineCovers[0]?.url ? (
+                  {pub.id === "african-sun" && resolveR2AssetUrl(magazineCovers[0]) ? (
                     <div className="w-56 h-72 rounded-lg shadow-2xl overflow-hidden relative">
                       <img
-                        src={magazineCovers[0].url}
+                        src={resolveR2AssetUrl(magazineCovers[0])}
                         alt={magazineCovers[0].alt || "African Sun cover"}
                         className="w-full h-full object-cover"
                       />
@@ -253,7 +253,7 @@ export default function Archives() {
                   });
                   const year = issueDate.getFullYear();
                   const canOpenPdf = Boolean(getPdfUrl(issue));
-                  const coverImage = getCoverImage(issue);
+                  const coverImageUrl = getCoverImageUrl(issue);
                   return (
                     <div key={issue.id} className="relative flex-shrink-0 w-[220px]">
 
@@ -277,10 +277,10 @@ export default function Archives() {
                             }`}
                             style={{ background: "#b45309" }}
                           >
-                            {coverImage?.url && (
+                            {coverImageUrl && (
                               <img
-                                src={coverImage.url}
-                                alt={coverImage.alt || issue.title}
+                                src={coverImageUrl}
+                                alt={issue.title}
                                 className="absolute inset-0 w-full h-full object-cover"
                               />
                             )}

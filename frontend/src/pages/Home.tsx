@@ -1,13 +1,11 @@
-import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import PDFViewer from "@/components/PDFViewer";
-import { backendApiUrl } from "@/lib/api";
+import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
 
 interface Media {
   url: string;
+  filename?: string;
   alt?: string;
   page?: number;
 }
@@ -27,7 +25,6 @@ export default function Home() {
   const [showPDF, setShowPDF] = useState(false);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [coverImage, setCoverImage] = useState<Media[]>([]);
-  const [magazineCovers, setMagazineCovers] = useState<Media[]>([]);
 
   useEffect(() => {
     fetch(backendApiUrl("/api/bsjissues"))
@@ -45,12 +42,10 @@ export default function Home() {
       .then(data => setCoverImage(data.docs))
   }, []);
 
-
-  useEffect(() => {
-    fetch(backendApiUrl("/api/media?where[alt][equals]=AfricanSunMagazineCovers"))
-      .then(res => res.json())
-      .then(data => setMagazineCovers(data.docs))
-  }, []);
+  const latestIssue = issues[0];
+  const latestIssueCoverUrl = resolveR2AssetUrl(latestIssue?.coverImage);
+  const latestIssuePdfUrl = resolveR2AssetUrl(latestIssue?.fullPdf);
+  const heroCoverUrl = resolveR2AssetUrl(coverImage[0]);
 
   return (
     <div className="flex flex-col gap-12 pb-20 pt-10">
@@ -110,7 +105,7 @@ export default function Home() {
           </div>
           <div className="relative aspect-square md:aspect-video rounded-xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
             <img 
-              src={coverImage[0]?.url} 
+              src={heroCoverUrl} 
               alt="BSJ Issue 6 Cover Image" 
               className="w-full h-full object-cover"
             />
@@ -129,10 +124,10 @@ export default function Home() {
           
           {!showPDF ? (
             <div className="flex flex-col items-center gap-6 mb-12">
-              <img src={issues[0]?.coverImage.url} alt="Cover of the current issue" className="h-[800px] object-cover shadow-2xl" />
+              <img src={latestIssueCoverUrl} alt="Cover of the current issue" className="h-[800px] object-cover shadow-2xl" />
               <Button 
                 onClick={() => setShowPDF(true)}
-                disabled={!issues[0]?.fullPdf?.url}
+                disabled={!latestIssuePdfUrl}
                 className="bg-[#f97316] hover:bg-[#ea580c] text-white font-bold px-8 py-6 text-lg"
               >
                 Open & Read
@@ -140,9 +135,9 @@ export default function Home() {
             </div>
           ) : (
             <div className="max-w-7xl mx-auto">
-              {issues[0]?.fullPdf?.url && (
+              {latestIssuePdfUrl && (
                 <PDFViewer 
-                  pdfUrl={issues[0].fullPdf.url} 
+                  pdfUrl={latestIssuePdfUrl} 
                   initialPage={1}
                   onClose={() => setShowPDF(false)} 
                 />

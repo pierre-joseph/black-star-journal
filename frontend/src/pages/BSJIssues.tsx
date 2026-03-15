@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import PDFViewer from "@/components/PDFViewer";
 import { Button } from "@/components/ui/button";
-import { backendApiUrl } from "@/lib/api";
+import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
 
 interface Media {
   url: string;
+  filename?: string;
   alt?: string;
 }
 
@@ -22,6 +23,9 @@ interface Issue {
 export default function BSJIssues() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const selectedIssuePdfUrl = selectedIssue
+    ? resolveR2AssetUrl(selectedIssue.fullPdf)
+    : undefined;
 
   // Fetch issues
   useEffect(() => {
@@ -54,7 +58,7 @@ export default function BSJIssues() {
   }, [selectedIssue]);
 
   const handleIssueClick = (issue: Issue) => {
-    if (issue.fullPdf?.url) {
+    if (resolveR2AssetUrl(issue.fullPdf)) {
       setSelectedIssue(issue);
     }
   };
@@ -107,10 +111,12 @@ export default function BSJIssues() {
             </div>
 
             <div className="rounded-xl overflow-hidden shadow-2xl">
-              <PDFViewer
-                pdfUrl={selectedIssue.fullPdf.url}
-                onClose={closeReader}
-              />
+              {selectedIssuePdfUrl && (
+                <PDFViewer
+                  pdfUrl={selectedIssuePdfUrl}
+                  onClose={closeReader}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -168,10 +174,10 @@ export default function BSJIssues() {
                                   : "border-border"
                               }`}
                           >
-                            {issue.coverImage?.url ? (
+                            {resolveR2AssetUrl(issue.coverImage) ? (
                               <>
                                 <img
-                                  src={issue.coverImage.url}
+                                  src={resolveR2AssetUrl(issue.coverImage)}
                                   alt={issue.coverImage.alt || issue.title}
                                   className="w-full h-full object-cover"
                                 />
