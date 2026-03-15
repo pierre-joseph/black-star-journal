@@ -12,6 +12,8 @@ const nextConfig = {
     },
   },
 
+  output: "standalone",
+
   webpack: (config) => {
     config.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
