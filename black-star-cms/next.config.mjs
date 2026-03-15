@@ -12,7 +12,10 @@ const nextConfig = {
     },
   },
 
-  output: "standalone",
+  // 🟢 Completely disable the memory-heavy file tracing
+  outputFileTracing: false,
+
+  // 🔴 REMOVED output: "standalone"
 
   webpack: (config) => {
     config.resolve.extensionAlias = {
