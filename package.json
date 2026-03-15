@@ -7,7 +7,7 @@
     "dev": "vite dev --port 5000",
     "build": "vite build",
     "preview": "vite preview",
-    "postinstall": "node copy-pdf-worker.js",
+    "postinstall": "node frontend/copy-pdf-worker.js",
     "check": "tsc"
   },
   "dependencies": {
@@ -70,9 +70,6 @@
     "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
-    "@replit/vite-plugin-cartographer": "^0.4.4",
-    "@replit/vite-plugin-dev-banner": "^0.1.1",
-    "@replit/vite-plugin-runtime-error-modal": "^0.0.4",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.14",
     "@types/node": "^20.19.0",

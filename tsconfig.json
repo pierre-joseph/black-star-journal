@@ -25,11 +25,10 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./frontend/src/*"],
-      "@cms/*": ["./black-star-cms/src/*"]
+      "@/*": ["./frontend/src/*"]
     }
   },
-  "include": ["frontend/src", "black-star-cms/src"],
+  "include": ["frontend/src"],
   "exclude": ["node_modules", "dist", ".next"],
   "ts-node": {
     "compilerOptions": {
