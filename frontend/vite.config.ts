@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), metaImagesPlugin()],
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "frontend", "src"),
+      "@": path.resolve(import.meta.dirname, "src"),
     },
   },
   css: {
@@ -16,13 +16,13 @@ export default defineConfig({
       plugins: [],
     },
   },
-  root: path.resolve(import.meta.dirname, "frontend"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
   server: {
-    host: "0.0.0.0",
+    host: "localhost",
+    port: 5000,
     allowedHosts: true,
     fs: {
       strict: true,

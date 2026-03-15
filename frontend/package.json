@@ -7,7 +7,7 @@
     "dev": "vite dev --port 5000",
     "build": "vite build",
     "preview": "vite preview",
-    "postinstall": "node frontend/copy-pdf-worker.js",
+    "postinstall": "node copy-pdf-worker.js",
     "check": "tsc"
   },
   "dependencies": {
