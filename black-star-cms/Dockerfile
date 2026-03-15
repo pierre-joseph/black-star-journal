@@ -54,7 +54,14 @@ RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
+# 1. Copy the standalone folder contents (this includes server.js!)
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+
+# 2. Copy static files
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# 3. Copy public folder (optional but highly recommended for Next.js images/favicons)
+COPY --from=builder /app/public ./public
 
 USER nextjs
 
