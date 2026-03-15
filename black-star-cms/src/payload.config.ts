@@ -14,6 +14,10 @@ import { AfricanSun } from './collections/AfricanSun'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Define your URLs dynamically
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+const frontendURL = process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5000'
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -21,14 +25,19 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  serverURL: 'http://localhost:3000',
+  
+  // Use the dynamic variable here
+  serverURL: serverURL,
 
+  // Update CORS and CSRF to trust both your local and production URLs
   cors: [
-    'http://localhost:5000',
+    frontendURL,
+    serverURL,
   ],
 
   csrf: [
-    'http://localhost:5000',
+    frontendURL,
+    serverURL,
   ],
   
   collections: [Users, Media, Issues, Articles, AfricanSun],
