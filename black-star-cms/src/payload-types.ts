@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     bsjissues: Bsjissue;
     articles: Article;
+    africansun: Africansun;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,6 +83,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     bsjissues: BsjissuesSelect<false> | BsjissuesSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    africansun: AfricansunSelect<false> | AfricansunSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -219,6 +221,22 @@ export interface Article {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "africansun".
+ */
+export interface Africansun {
+  id: string;
+  title: string;
+  slug: string;
+  publishDate: string;
+  fullPdf: string | Media;
+  coverImage?: (string | null) | Media;
+  description?: string | null;
+  articles?: (string | Article)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -256,6 +274,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'articles';
         value: string | Article;
+      } | null)
+    | ({
+        relationTo: 'africansun';
+        value: string | Africansun;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -371,6 +393,21 @@ export interface ArticlesSelect<T extends boolean = true> {
   content?: T;
   excerpt?: T;
   featuredImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "africansun_select".
+ */
+export interface AfricansunSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  publishDate?: T;
+  fullPdf?: T;
+  coverImage?: T;
+  description?: T;
+  articles?: T;
   updatedAt?: T;
   createdAt?: T;
 }

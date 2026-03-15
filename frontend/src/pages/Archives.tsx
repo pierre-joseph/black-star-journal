@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { BookOpen, Users, Calendar } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
+import { BookOpen, Calendar } from "lucide-react";
+import PDFViewer from "@/components/PDFViewer";
+import { Button } from "@/components/ui/button";
 
 // ─── Publication Profiles ──────────────────────────────────────────────────────
 
@@ -46,149 +47,19 @@ const PUBLICATIONS_INFO = [
   },
 ];
 
-// ─── Past Issues ──────────────────────────────────────────────────────────────────
-// Years within each publication's documented run:
-// African Sun: 1991–2010  |  BOP: 1972–1975  |  Uwezo: 1970–1993
-
-interface MockIssue {
-  id: string;
-  title: string;
-  publication: "African Sun" | "BOP" | "Uwezo";
-  year: number;
-  color: string;
-  excerpt: string;
-  type: "magazine" | "journal";
-  pdfUrl?: string;
+interface Media {
+  url?: string;
+  alt?: string;
 }
 
-const PAST_ISSUES: MockIssue[] = [
-  // 2008 — African Sun only (1991–2010)
-  { id: "i1",  title: "African Sun — Fall 2008",   publication: "African Sun", year: 2008, color: "#b45309", excerpt: "Documenting the Obama moment — what it meant on College Hill.", type: "magazine" },
-  { id: "i2",  title: "African Sun — Spring 2008", publication: "African Sun", year: 2008, color: "#92400e", excerpt: "On homecoming: first-generation students and the weight of expectation.", type: "magazine" },
-  // 1998 — African Sun + Uwezo overlap
-  { id: "i3",  title: "African Sun — Spring 1998", publication: "African Sun", year: 1998, color: "#a16207", excerpt: "Love letters to the continent — dispatches from the diaspora.", type: "magazine" },
-  { id: "i4",  title: "Uwezo — Fall 1998",         publication: "Uwezo",       year: 1998, color: "#14532d", excerpt: "Third World Center at 25: what we built, what we lost.", type: "journal" },
-  // 1985 — Uwezo only (1970–1993)
-  { id: "i5",  title: "Uwezo — Spring 1985",       publication: "Uwezo",       year: 1985, color: "#166534", excerpt: "Divestment now — Brown's ties to apartheid South Africa.", type: "journal" },
-  { id: "i6",  title: "Uwezo — Fall 1985",         publication: "Uwezo",       year: 1985, color: "#14532d", excerpt: "Black student enrollment crisis: a community responds.", type: "journal" },
-  // 1978 — Uwezo only (1970–1993)
-  { id: "i7",  title: "Uwezo — Spring 1978",       publication: "Uwezo",       year: 1978, color: "#166534", excerpt: "Pan-Africanism on campus: theory and practice.", type: "journal" },
-  { id: "i8",  title: "Uwezo — Fall 1978",         publication: "Uwezo",       year: 1978, color: "#14532d", excerpt: "In memoriam: the losses that shaped our generation.", type: "journal" },
-  // 1975 — BOP archives + Uwezo (University Archives holds BOP from 1974–1975)
-  { id: "i9",  title: "BOP — Spring 1975",         publication: "BOP",         year: 1975, color: "#1c1917", excerpt: "Against invisibility — on being Black and seen at Brown.", type: "journal" },
-  { id: "i10", title: "BOP — Fall 1975",           publication: "BOP",         year: 1975, color: "#292524", excerpt: "A whole spectrum of black thought — voices from campus.", type: "journal" },
-  { id: "i11", title: "Uwezo — Fall 1975",         publication: "Uwezo",       year: 1975, color: "#166534", excerpt: "Reflections on five years of OUAP and what comes next.", type: "journal" },
-  // 1972 — BOP + Uwezo founding era
-  { id: "i12", title: "BOP — Fall 1972",           publication: "BOP",         year: 1972, color: "#1c1917", excerpt: "The founding issue: expressing what Brown refused to hold.", type: "journal" },
-  { id: "i13", title: "Uwezo — Spring 1972",       publication: "Uwezo",       year: 1972, color: "#14532d", excerpt: "Unity and strength — why we built a publication of our own.", type: "journal" },
-  { id: "i14", title: "Uwezo — Fall 1972",         publication: "Uwezo",       year: 1972, color: "#166534", excerpt: "Two years in: consolidating the voice of the OUAP.", type: "journal" },
-];
-
-// ─── Editor Voices ──────────────────────────────────────────────────────────────────
-
-const EDITOR_QUOTES = [
-  {
-    id: "q1",
-    name: "Adaeze Nwosu",
-    role: "Editor-in-Chief, African Sun",
-    years: "2004–2005",
-    publication: "African Sun",
-    quote: "We didn't make African Sun for Brown. We made it for ourselves — and for every African student who came before us and felt invisible on this campus. The fact that it resonated so widely was a shock, and then a gift.",
-  },
-  {
-    id: "q2",
-    name: "Kambon Obayani",
-    role: "Editor, Blacks on Paper",
-    years: "1974–1975",
-    publication: "BOP",
-    quote: "Blacks on Paper started because there was literally nowhere on this campus where a Black student could publish a personal essay without it being edited for a white audience. We needed a room of our own. BOP was that room.",
-  },
-  {
-    id: "q3",
-    name: "Chinwe Okonkwo",
-    role: "Editor, Uwezo",
-    years: "1983–1985",
-    publication: "Uwezo",
-    quote: "Uwezo was built on a conviction: that unity and strength — what our name means — had to show up on the page first. We were proving something to ourselves and to this institution every time we published.",
-  },
-  {
-    id: "q4",
-    name: "Solange Pierre",
-    role: "Editor-in-Chief, African Sun",
-    years: "1997–1998",
-    publication: "African Sun",
-    quote: "Every issue of African Sun was a time capsule. When I read old issues now, I can feel exactly what it was like to be Black at Brown in that moment — the fears, the joys, the specific texture of that community. That's what archives preserve.",
-  },
-  {
-    id: "q5",
-    name: "James Opoku",
-    role: "Editor, Uwezo",
-    years: "1977–1979",
-    publication: "Uwezo",
-    quote: "We published Uwezo through the divestment fights, through Reagan, through the founding of the Third World Center. People forget that a student magazine was in the middle of all of that — documenting it, shaping it, holding the community together.",
-  },
-];
-
-// ─── Contributors ──────────────────────────────────────────────────────────────────
-
-const CONTRIBUTORS = [
-  { name: "Rodney Dennis",    role: "Editor",             publication: "BOP",         years: "1972–1975" },
-  { name: "Kambon Obayani",   role: "Editor",             publication: "BOP",         years: "1974–1975" },
-  { name: "Gayl Jones",       role: "Editor",             publication: "BOP",         years: "1972–1975" },
-  { name: "James Opoku",      role: "Editor",             publication: "Uwezo",       years: "1977–1979" },
-  { name: "Adaeze Nwosu",     role: "Editor-in-Chief",    publication: "African Sun", years: "2004–2005" },
-  { name: "Solange Pierre",   role: "Editor-in-Chief",    publication: "African Sun", years: "1997–1998" },
-  { name: "Chinwe Okonkwo",   role: "Editor",             publication: "Uwezo",       years: "1983–1985" },
-  { name: "Ife Adesanya",     role: "Art Director",       publication: "African Sun", years: "2001–2002" },
-  { name: "Kwabena Asare",    role: "Editor",             publication: "Uwezo",       years: "1989–1991" },
-  { name: "Nadia Moreau",     role: "Photographer",       publication: "African Sun", years: "2006–2007" },
-  { name: "Dana Carroll",     role: "Staff Writer",       publication: "Uwezo",       years: "1980–1982" },
-  { name: "Amara Diallo",     role: "Staff Writer",       publication: "African Sun", years: "2008–2009" },
-];
-
-// ─── Alumni Highlights ───────────────────────────────────────────────────────────────
-const ALUMNI_HIGHLIGHTS = [
-  {
-    id: "a1",
-    name: "Gayl Jones",
-    classYear: "'71",
-    publication: "BOP (Editor)",
-    achievement: "Novelist and poet; author of 'Corregidora' (1975) and 'Eva's Man' (1976)",
-    bio: "One of BOP's founding editors. Went on to become one of the most celebrated Black American novelists of the twentieth century, championed by Toni Morrison at Random House.",
-    tag: "Literature",
-    color: "#1c1917",
-  },
-  {
-    id: "a2",
-    name: "Kambon Obayani",
-    classYear: "'75",
-    publication: "BOP (Editor)",
-    achievement: "Poet, community organizer, and longtime faculty at Laney College; author of multiple collections",
-    bio: "Edited BOP through its final years. Carried his commitment to Black expression into decades of teaching and community work in the Bay Area.",
-    tag: "Poetry",
-    color: "#292524",
-  },
-  {
-    id: "a3",
-    name: "Adaeze Nwosu",
-    classYear: "'05",
-    publication: "African Sun (Editor-in-Chief)",
-    achievement: "Co-founder of Ìmọ̀ Press, an independent publisher focused on African diaspora literature",
-    bio: "Used the design and editorial skills from African Sun to build one of the most celebrated small presses in contemporary Black publishing.",
-    tag: "Publishing",
-    color: "#b45309",
-  },
-  {
-    id: "a4",
-    name: "James Opoku",
-    classYear: "'79",
-    publication: "Uwezo (Editor)",
-    achievement: "Professor of African and African American Studies, Spelman College",
-    bio: "Turned his years editing Uwezo into a scholarly career centered on African political thought and student movements. His syllabi still cite issues of Uwezo as primary sources.",
-    tag: "Academia",
-    color: "#14532d",
-  },
-];
+interface AfricanSunIssue {
+  id: string;
+  title: string;
+  publishDate: string;
+  coverImage?: Media | string | null;
+  fullPdf?: Media | string;
+  description?: string;
+}
 
 // ─── BSJ Connection ──────────────────────────────────────────────────────────────────
 const BSJ_CONNECTION_POINTS = [
@@ -197,23 +68,57 @@ const BSJ_CONNECTION_POINTS = [
   { label: "African Sun", connector: "gave us the vision", detail: "African Sun proved that a Black student publication could be as beautiful as it is powerful. Monthly, sustained, designed with intention. We carry that standard." },
 ];
 
-
-
 // ─── Main Page ──────────────────────────────────────────────────────────────────
-
 export default function Archives() {
-  const [activeQuoteIdx, setActiveQuoteIdx] = useState(0);
-  const [contributorFilter, setContributorFilter] = useState<string>("All");
-  const [activePubFilter, setActivePubFilter] = useState<string>("All");
+  const [africanSunIssues, setAfricanSunIssues] = useState<AfricanSunIssue[]>([]);
+  const [selectedIssue, setSelectedIssue] = useState<AfricanSunIssue | null>(null);
+  const [magazineCovers, setMagazineCovers] = useState<Media[]>([]);
 
-  const filteredIssues = [...PAST_ISSUES]
-    .filter(p => activePubFilter === "All" || p.publication === activePubFilter)
-    .sort((a, b) => a.year - b.year);
+  const getPdfUrl = (issue: AfricanSunIssue): string | undefined => {
+    if (!issue.fullPdf) return undefined;
+    if (typeof issue.fullPdf === "string") return undefined;
+    return issue.fullPdf.url;
+  };
 
-  const pubOptions = ["All", "African Sun", "BOP", "Uwezo"];
-  const filteredContributors = contributorFilter === "All"
-    ? CONTRIBUTORS
-    : CONTRIBUTORS.filter(c => c.publication === contributorFilter);
+  const getCoverImage = (issue: AfricanSunIssue): Media | undefined => {
+    if (!issue.coverImage || typeof issue.coverImage === "string") return undefined;
+    return issue.coverImage;
+  };
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/media?where[alt][equals]=AfricanSunMagazineCovers")
+      .then(res => res.json())
+      .then(data => setMagazineCovers(data.docs))
+   }, []);
+
+  useEffect(() => {
+      fetch("http://localhost:3000/api/africansun?sort=-publishDate&limit=200&depth=2")
+        .then(res => res.json())
+        .then(data => {
+          // Sort by publish date in descending order (newest first)
+          const sortedIssues = [...(data.docs || [])].sort(
+            (a, b) => new Date(a.publishDate).getTime() - new Date(b.publishDate).getTime()
+          );
+          setAfricanSunIssues(sortedIssues);
+        })
+        .catch(error => console.error("Error fetching African Sun issues:", error));
+    }, []);
+    
+  useEffect(() => {
+    if (!selectedIssue) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedIssue(null);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [selectedIssue]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -287,18 +192,33 @@ export default function Archives() {
                   </div>
                 </div>
                 <div className={`flex items-center justify-center ${i % 2 === 1 ? "md:order-1" : ""}`}>
-                  <div className="w-56 h-72 rounded-lg shadow-2xl flex flex-col justify-between p-8 relative overflow-hidden"
-                    style={{ background: pub.color }}>
-                    <div>
-                      <div className="text-[9px] font-bold tracking-widest uppercase text-white/40 mb-2">Brown University</div>
-                      <div className="text-white font-heading font-black text-2xl leading-tight">{pub.name}</div>
+                  {pub.id === "african-sun" && magazineCovers[0]?.url ? (
+                    <div className="w-56 h-72 rounded-lg shadow-2xl overflow-hidden relative">
+                      <img
+                        src={magazineCovers[0].url}
+                        alt={magazineCovers[0].alt || "African Sun cover"}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                      <div className="absolute bottom-4 left-4 right-4 text-white">
+                        <div className="text-[9px] font-bold tracking-widest uppercase text-white/70 mb-1">Brown University</div>
+                        <div className="font-heading font-black text-xl leading-tight">{pub.name}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="w-10 h-0.5 bg-white/30 mb-3" />
-                      <div className="text-white/50 text-xs tracking-wider">{pub.years}</div>
+                  ) : (
+                    <div className="w-56 h-72 rounded-lg shadow-2xl flex flex-col justify-between p-8 relative overflow-hidden"
+                      style={{ background: pub.color }}>
+                      <div>
+                        <div className="text-[9px] font-bold tracking-widest uppercase text-white/40 mb-2">Brown University</div>
+                        <div className="text-white font-heading font-black text-2xl leading-tight">{pub.name}</div>
+                      </div>
+                      <div>
+                        <div className="w-10 h-0.5 bg-white/30 mb-3" />
+                        <div className="text-white/50 text-xs tracking-wider">{pub.years}</div>
+                      </div>
+                      <div className="absolute -bottom-6 -right-6 w-32 h-32 rounded-full bg-white/5" />
                     </div>
-                    <div className="absolute -bottom-6 -right-6 w-32 h-32 rounded-full bg-white/5" />
-                  </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -311,26 +231,9 @@ export default function Archives() {
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-3 mb-2">
             <Calendar size={18} className="text-[#f97316]" />
-            <span className="text-xs font-bold tracking-widest uppercase text-[#f97316]">Browse by publication</span>
+            <span className="text-xs font-bold tracking-widest uppercase text-[#f97316]">African Sun timeline</span>
           </div>
-          <h2 className="font-heading font-black text-3xl text-stone-900 mb-6">Issue Browser</h2>
-
-          {/* Publication filter */}
-          <div className="flex gap-2 flex-wrap mb-12">
-            {pubOptions.map(opt => (
-              <button
-                key={opt}
-                onClick={() => setActivePubFilter(opt)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  activePubFilter === opt
-                    ? "bg-stone-900 text-white"
-                    : "bg-white text-stone-500 border border-stone-200 hover:border-stone-400"
-                }`}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
+          <h2 className="font-heading font-black text-3xl text-stone-900 mb-6">African Sun Issues</h2>
 
           {/* Horizontal alternating timeline */}
           <div className="relative">
@@ -340,8 +243,16 @@ export default function Archives() {
                 {/* Horizontal spine */}
                 <div className="absolute top-[220px] left-0 right-0 h-0.5 bg-stone-300" />
 
-                {filteredIssues.map((issue, index) => {
+                {africanSunIssues.map((issue, index) => {
                   const isEven = index % 2 === 0;
+                  const issueDate = new Date(issue.publishDate);
+                  const formattedDate = issueDate.toLocaleDateString("en-US", {
+                    month: "short",
+                    year: "numeric",
+                  });
+                  const year = issueDate.getFullYear();
+                  const canOpenPdf = Boolean(getPdfUrl(issue));
+                  const coverImage = getCoverImage(issue);
                   return (
                     <div key={issue.id} className="relative flex-shrink-0 w-[220px]">
 
@@ -359,34 +270,28 @@ export default function Archives() {
                         {/* Cover card */}
                         <div className={isEven ? "mb-12" : "mt-12"}>
                           <div
-                            className="w-[180px] h-[240px] relative group shadow-xl rounded-sm overflow-hidden"
-                            style={{ background: issue.color }}
+                            onClick={() => canOpenPdf && setSelectedIssue(issue)}
+                            className={`w-[180px] h-[240px] relative group shadow-xl rounded-sm overflow-hidden p-4 flex flex-col justify-between ${
+                              canOpenPdf ? "cursor-pointer" : "cursor-not-allowed"
+                            }`}
+                            style={{ background: "#b45309" }}
                           >
-                            <div className="p-4 h-full flex flex-col justify-between">
-                              <div
-                                className="text-[9px] font-bold tracking-widest uppercase"
-                                style={{ color: "rgba(255,255,255,0.45)" }}
-                              >
-                                {issue.publication}
-                              </div>
-                              <div>
-                                <div className="w-6 h-0.5 bg-white/30 mb-2" />
-                                <div className="text-white font-heading font-black text-sm leading-tight">
-                                  {issue.title}
-                                </div>
-                              </div>
-                            </div>
+                            {coverImage?.url && (
+                              <img
+                                src={coverImage.url}
+                                alt={coverImage.alt || issue.title}
+                                className="absolute inset-0 w-full h-full object-cover"
+                              />
+                            )}
+
                             {/* Hover overlay */}
                             <div className="absolute inset-0 bg-stone-950/90 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-center px-4 gap-2">
-                              <div
-                                className="text-xs font-bold tracking-widest uppercase"
-                                style={{ color: issue.color === "#1c1917" || issue.color === "#292524" ? "#f97316" : issue.color }}
-                              >
-                                {issue.year}
+                              <div className="text-xs font-bold tracking-widest uppercase text-[#f97316]">
+                                {formattedDate}
                               </div>
-                              <div className="text-white text-sm italic leading-snug">{issue.title}</div>
-                              <div className="text-white/60 text-[11px] leading-relaxed line-clamp-3 mt-1">
-                                {issue.excerpt}
+                              <div className="text-white text-sm italic leading-snug line-clamp-3">{issue.title}</div>
+                              <div className="text-white text-[11px] tracking-widest uppercase mt-1">
+                                {canOpenPdf ? "Read Issue" : "PDF Unavailable"}
                               </div>
                             </div>
                           </div>
@@ -396,13 +301,13 @@ export default function Archives() {
                         <div className="relative z-10">
                           <div
                             className="w-12 h-12 rounded-full border-4 bg-white shadow-lg flex items-center justify-center"
-                            style={{ borderColor: issue.color }}
+                            style={{ borderColor: "#b45309" }}
                           >
                             <div
                               className="text-[9px] font-bold text-center leading-tight"
-                              style={{ color: issue.color }}
+                              style={{ color: "#b45309" }}
                             >
-                              {issue.year}
+                              {year}
                             </div>
                           </div>
                         </div>
@@ -410,21 +315,13 @@ export default function Archives() {
                         {/* Metadata */}
                         <div className={isEven ? "mt-12" : "mb-12"}>
                           <div className="text-center w-[200px]">
-                            <div
-                              className="text-base font-heading font-bold mb-1"
-                              style={{ color: issue.color === "#1c1917" || issue.color === "#292524" ? "#44403c" : issue.color }}
-                            >
-                              {issue.year}
-                            </div>
+                            <div className="text-base font-heading font-bold mb-1 text-[#b45309]">{formattedDate}</div>
                             <div className="text-sm font-serif italic mb-1 text-stone-700 leading-snug">
                               {issue.title}
                             </div>
                             <div className="text-[10px] uppercase tracking-widest text-stone-400">
-                              {issue.publication}
+                              African Sun
                             </div>
-                            <Badge variant="outline" className="text-[9px] uppercase tracking-wider mt-2">
-                              {issue.type}
-                            </Badge>
                           </div>
                         </div>
 
@@ -435,7 +332,7 @@ export default function Archives() {
               </div>
             </div>
 
-            {filteredIssues.length > 3 && (
+            {africanSunIssues.length > 3 && (
               <div className="text-center mt-4 text-sm text-stone-400">
                 ← Scroll to explore all issues →
               </div>
@@ -443,150 +340,51 @@ export default function Archives() {
           </div>
 
           <p className="text-xs text-stone-400 mt-8 italic">
-            Note: Full digital scans of historical issues are being compiled. Contact BSJ to contribute physical copies or scans.
+            Click any card to open the full issue PDF. Archives for BOP and Uwezo coming soon.
           </p>
         </div>
       </section>
 
-      {/* ── EDITOR VOICES ─────────────────────────────────────────── */}
-      <section className="py-20 bg-stone-950 border-b border-stone-800">
+      {/* PDF READER MODAL */}
+      {selectedIssue && getPdfUrl(selectedIssue) && (
+        <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setSelectedIssue(null)} />
+
+          <div className="relative w-full max-w-7xl mx-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-3">
+              <div className="text-white text-sm opacity-80">{selectedIssue.title}</div>
+              <Button onClick={() => setSelectedIssue(null)} variant="ghost" className="text-white">
+                Close
+              </Button>
+            </div>
+
+            <div className="rounded-xl overflow-hidden shadow-2xl">
+              <PDFViewer pdfUrl={getPdfUrl(selectedIssue)!} onClose={() => setSelectedIssue(null)} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── WHAT BSJ INHERITS ───── */}
+      <section className="py-24 bg-white border-t border-stone-200">
         <div className="container mx-auto px-4 max-w-4xl">
-          <span className="text-xs font-bold tracking-widest uppercase text-[#f97316] mb-2 block">From past editors</span>
-          <h2 className="font-heading font-black text-3xl text-white mb-12">Editor Voices</h2>
-
-          <div className="relative min-h-[220px]">
-            {EDITOR_QUOTES.map((q, i) => (
-              <div
-                key={q.id}
-                className={`transition-all duration-500 ${i === activeQuoteIdx ? "opacity-100" : "opacity-0 absolute inset-0 pointer-events-none"}`}
-              >
-                <div className="text-6xl font-serif text-[#f97316] leading-none mb-4 select-none">"</div>
-                <p className="font-serif text-2xl md:text-3xl text-white/90 leading-relaxed italic mb-8">
-                  {q.quote}
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-[#f97316]/20 flex items-center justify-center text-[#f97316] font-bold font-heading">
-                    {q.name[0]}
-                  </div>
-                  <div>
-                    <div className="text-white font-bold text-sm">{q.name}</div>
-                    <div className="text-white/50 text-xs">{q.role} · {q.years}
-                      <span className="ml-2 text-orange-400">— {q.publication}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-3 mt-8">
-            {EDITOR_QUOTES.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveQuoteIdx(i)}
-                className={`h-1 rounded-full transition-all ${i === activeQuoteIdx ? "bg-[#f97316] w-8" : "bg-white/20 w-4"}`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── ALL CONTRIBUTORS ─────────────────────────────────────── */}
-      <section className="py-20 bg-white border-b border-stone-200">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-3 mb-2">
-            <Users size={18} className="text-[#f97316]" />
-            <span className="text-xs font-bold tracking-widest uppercase text-[#f97316]">Everyone who built this</span>
-          </div>
-          <h2 className="font-heading font-black text-3xl text-stone-900 mb-8">All Contributors</h2>
-
-          {/* Filter */}
-          <div className="flex gap-2 flex-wrap mb-8">
-            {pubOptions.map(opt => (
-              <button
-                key={opt}
-                onClick={() => setContributorFilter(opt)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  contributorFilter === opt
-                    ? "bg-stone-900 text-white"
-                    : "bg-stone-100 text-stone-500 hover:bg-stone-200"
-                }`}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredContributors.map(c => (
-              <div key={c.name} className="flex flex-col gap-1 p-4 rounded-xl bg-stone-50 border border-stone-100 hover:border-[#f97316]/30 transition-colors">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold font-heading text-sm mb-1"
-                  style={{ background: PUBLICATIONS_INFO.find(p => p.name === c.publication)?.color ?? "#f97316" }}>
-                  {c.name[0]}
-                </div>
-                <div className="font-bold text-stone-900 text-sm">{c.name}</div>
-                <div className="text-[11px] text-stone-500">{c.role}</div>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="outline" className="text-[9px] uppercase tracking-wider px-2 py-0">
-                    {c.publication}
-                  </Badge>
-                  <span className="text-[10px] text-stone-400">{c.years}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── ALUMNI HIGHLIGHTS ────────────────────────────────────── */}
-      <section className="py-20 bg-stone-50 border-b border-stone-200">
-        <div className="container mx-auto px-4">
-          <span className="text-xs font-bold tracking-widest uppercase text-[#f97316] mb-2 block">Where they are now</span>
-          <h2 className="font-heading font-black text-3xl text-stone-900 mb-10">Alumni Highlights</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {ALUMNI_HIGHLIGHTS.map(a => (
-              <div key={a.id} className="bg-white rounded-2xl p-6 border border-stone-100 shadow-sm hover:shadow-md transition-shadow flex gap-5">
-                <div className="w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center text-white font-heading font-black text-xl"
-                  style={{ background: a.color }}>
-                  {a.name[0]}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="font-bold text-stone-900">{a.name}</span>
-                    <span className="text-stone-400 text-xs">Class of {a.classYear}</span>
-                    <Badge className="text-white text-[9px] uppercase px-2 py-0.5 ml-1" style={{ background: a.color }}>{a.tag}</Badge>
-                  </div>
-                  <div className="text-[10px] tracking-widest uppercase text-stone-400 mb-1">{a.publication}</div>
-                  <p className="text-sm font-semibold mb-2" style={{ color: a.color }}>{a.achievement}</p>
-                  <p className="text-sm text-stone-500 font-serif leading-relaxed">{a.bio}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-{/* ── WHAT BSJ INHERITS ────────────────────────────────────── */}
-      <section className="py-24 bg-[#f97316]">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <span className="text-xs font-bold tracking-widest uppercase text-white/60 mb-3 block">The throughline</span>
-          <h2 className="font-heading font-black text-4xl md:text-5xl text-white mb-4 leading-tight">
+          <span className="text-xs font-bold tracking-widest uppercase text-[#f97316] mb-3 block">The throughline</span>
+          <h2 className="font-heading font-black text-4xl md:text-5xl text-stone-900 mb-4 leading-tight">
             What BSJ Inherits
           </h2>
-          <p className="font-serif text-white/80 text-lg max-w-2xl mb-12">
+          <p className="font-serif text-stone-600 text-lg max-w-2xl mb-12">
             The Black Star Journal is not a departure from this history — it is its continuation. Here is what was passed down.
           </p>
           <div className="flex flex-col gap-6">
             {BSJ_CONNECTION_POINTS.map((pt, i) => (
-              <div key={i} className="flex gap-5 items-start bg-white/10 rounded-xl p-6">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex-shrink-0 flex items-center justify-center text-white font-bold font-heading">
+              <div key={i} className="flex gap-5 items-start bg-stone-50 border border-stone-200 rounded-xl p-6">
+                <div className="w-10 h-10 rounded-full bg-[#f97316] flex-shrink-0 flex items-center justify-center text-white font-bold font-heading">
                   {i + 1}
                 </div>
                 <div>
-                  <div className="font-heading font-black text-white text-lg mb-1">{pt.label}</div>
-                  <div className="text-white/50 text-xs tracking-widest uppercase mb-2">{pt.connector}</div>
-                  <p className="font-serif text-white/80 text-sm leading-relaxed">{pt.detail}</p>
+                  <div className="font-heading font-black text-stone-900 text-lg mb-1">{pt.label}</div>
+                  <div className="text-[#f97316] text-xs tracking-widest uppercase mb-2">{pt.connector}</div>
+                  <p className="font-serif text-stone-600 text-sm leading-relaxed">{pt.detail}</p>
                 </div>
               </div>
             ))}

@@ -9,6 +9,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Issues } from './collections/Issues'
 import { Articles } from './collections/Articles'
+import { AfricanSun } from './collections/AfricanSun'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -30,7 +31,7 @@ export default buildConfig({
     'http://localhost:5000',
   ],
   
-  collections: [Users, Media, Issues, Articles],
+  collections: [Users, Media, Issues, Articles, AfricanSun],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

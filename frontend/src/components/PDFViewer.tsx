@@ -173,12 +173,7 @@ export default function PDFViewer({ pdfUrl, initialPage = 1 }: PDFViewerProps) {
             onLoadSuccess={onDocumentLoadSuccess}
             options={options}
           >
-            <div className="relative flex gap-2 shadow-2xl">
-              {!isSinglePage && (
-                <div className="absolute left-1/2 top-0 bottom-0 w-2 -ml-1
-                                bg-white
-                                z-10 pointer-events-none shadow-sm" />
-              )}
+            <div className="relative flex shadow-2xl">
 
               {/* Render all needed pages, show/hide based on current spread */}
               {pagesToRender.map((num) => {
