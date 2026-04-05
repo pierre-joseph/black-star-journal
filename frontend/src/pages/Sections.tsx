@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const SAMPLE_ARTICLES = [
   {
@@ -49,6 +51,7 @@ const SAMPLE_ARTICLES = [
 const CATEGORIES = ["All", "Arts & Culture", "Stories", "Local", "Columns", "Society & News"];
 
 export default function Sections() {
+  usePageTitle('Sections');
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filteredArticles = activeCategory === "All" 
@@ -81,9 +84,14 @@ export default function Sections() {
           <div>
             <h2 className="font-heading font-bold text-xl mb-4 uppercase tracking-wider">Issues</h2>
             <ul className="space-y-2 font-mono text-muted-foreground">
-              {['06', '05', '04', '03', '02', '01'].map(issue => (
-                <li key={issue} className="hover:text-foreground cursor-pointer transition-colors">
-                  Issue #{issue}
+              {['12', '11', '10', '09', '08', '07', '06', '05', '04', '03', '02', '01', 'SPECIAL'].map(issue => (
+                <li key={issue}>
+                  <Link 
+                    to={`/issue/${issue}`}
+                    className="hover:text-foreground cursor-pointer transition-colors block px-2 py-1 rounded hover:bg-muted/50"
+                  >
+                    {issue === 'SPECIAL' ? 'Special Issue #01' : `Issue #${issue}`}
+                  </Link>
                 </li>
               ))}
             </ul>

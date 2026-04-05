@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const staffData = [
   {
@@ -98,6 +99,7 @@ const staffData = [
 ];
 
 export default function Team() {
+  usePageTitle('Our Team');
   return (
     <div className="pb-20">
       {/* Hero */}
