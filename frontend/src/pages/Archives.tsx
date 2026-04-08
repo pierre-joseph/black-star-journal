@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, Calendar } from "lucide-react";
 import PDFViewer from "@/components/PDFViewer";
 import { Button } from "@/components/ui/button";
-import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 // ─── Publication Profiles ──────────────────────────────────────────────────────
 
@@ -63,6 +63,34 @@ interface AfricanSunIssue {
   description?: string;
 }
 
+// ─── African Sun Issues (Local Data) ────────────────────────────────────────
+const AFRICAN_SUN_ISSUES: AfricanSunIssue[] = [
+  { id: '1', title: 'May 1991', publishDate: '1991-05-01', coverImage: { url: '/images/archive-covers/May 1991.png' }, fullPdf: { url: '/pdfs/archive-issues/1991/African Sun - May 1991.pdf' } },
+  { id: '2', title: 'September 1991', publishDate: '1991-09-01', coverImage: { url: '/images/archive-covers/Sep 1991.png' }, fullPdf: { url: '/pdfs/archive-issues/1991/African Sun - September 1991.pdf' } },
+  { id: '3', title: 'November 1991', publishDate: '1991-11-01', coverImage: { url: '/images/archive-covers/Nov 1991.png' }, fullPdf: { url: '/pdfs/archive-issues/1991/African Sun - November 1991.pdf' } },
+  { id: '4', title: 'December 1991', publishDate: '1991-12-01', coverImage: { url: '/images/archive-covers/Dec 1991.png' }, fullPdf: { url: '/pdfs/archive-issues/1991/African Sun - December 1991.pdf' } },
+  { id: '5', title: 'February 1992', publishDate: '1992-02-01', coverImage: { url: '/images/archive-covers/Feb 1992.png' }, fullPdf: { url: '/pdfs/archive-issues/1992/African Sun - Feb 1992.pdf' } },
+  { id: '6', title: 'March 1992', publishDate: '1992-03-01', coverImage: { url: '/images/archive-covers/March 1992.png' }, fullPdf: { url: '/pdfs/archive-issues/1992/African Sun - March 1992.pdf' } },
+  { id: '7', title: 'September 1992', publishDate: '1992-09-01', coverImage: { url: '/images/archive-covers/Sept 1992.png' }, fullPdf: { url: '/pdfs/archive-issues/1992/African Sun - Sept 1992.pdf' } },
+  { id: '8', title: 'October 1992', publishDate: '1992-10-01', coverImage: { url: '/images/archive-covers/Oct 1992.png' }, fullPdf: { url: '/pdfs/archive-issues/1992/African Sun - Oct 1992.pdf' } },
+  { id: '9', title: 'February 1993', publishDate: '1993-02-01', coverImage: { url: '/images/archive-covers/Feb 1993.png' }, fullPdf: { url: '/pdfs/archive-issues/1993/African Sun - Feb 1993.pdf' } },
+  { id: '10', title: 'May 1993', publishDate: '1993-05-01', coverImage: { url: '/images/archive-covers/May 1993.png' }, fullPdf: { url: '/pdfs/archive-issues/1993/African Sun - May 1993.pdf' } },
+  { id: '11', title: 'September 1993', publishDate: '1993-09-01', coverImage: { url: '/images/archive-covers/Sept 1993.png' }, fullPdf: { url: '/pdfs/archive-issues/1993/African Sun - Sept 1993.pdf' } },
+  { id: '12', title: 'October 1993', publishDate: '1993-10-01', coverImage: { url: '/images/archive-covers/Oct 1993.png' }, fullPdf: { url: '/pdfs/archive-issues/1993/African Sun - Oct 1993.pdf' } },
+  { id: '13', title: 'January & February 1994', publishDate: '1994-01-01', coverImage: { url: '/images/archive-covers/Jan and Feb 1994.png' }, fullPdf: { url: '/pdfs/archive-issues/1994/African Sun - Jan_Feb 1994.pdf' } },
+  { id: '14', title: 'March 1994', publishDate: '1994-03-01', coverImage: { url: '/images/archive-covers/March 1994.png' }, fullPdf: { url: '/pdfs/archive-issues/1994/African Sun - March 1994.pdf' } },
+  { id: '15', title: 'May 1996', publishDate: '1996-05-01', coverImage: { url: '/images/archive-covers/May 1996.png' }, fullPdf: { url: '/pdfs/archive-issues/1996/African Sun - May 1996 (Issue #4).pdf' } },
+  { id: '16', title: 'April 1997', publishDate: '1997-04-01', coverImage: { url: '/images/archive-covers/April 1997.png' }, fullPdf: { url: '/pdfs/archive-issues/1997/African Sun - April 1997 (Issue #1).pdf' } },
+  { id: '17', title: 'December 1997', publishDate: '1997-12-01', coverImage: { url: '/images/archive-covers/Dec 1997.png' }, fullPdf: { url: '/pdfs/archive-issues/1997/African Sun - November 1997.pdf' } },
+  { id: '18', title: 'December 2001', publishDate: '2001-12-01', coverImage: { url: '/images/archive-covers/Dec 2001.png' }, fullPdf: { url: '/pdfs/archive-issues/2001/African Sun - December 2001.pdf' } },
+  { id: '19', title: 'February 2002', publishDate: '2002-02-01', coverImage: { url: '/images/archive-covers/Feb 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - February 2002.pdf' } },
+  { id: '20', title: 'March 2002', publishDate: '2002-03-01', coverImage: { url: '/images/archive-covers/March 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - March 2002.pdf' } },
+  { id: '21', title: 'April 2002', publishDate: '2002-04-01', coverImage: { url: '/images/archive-covers/April 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - April 2002.pdf' } },
+  { id: '22', title: 'October 2002', publishDate: '2002-10-01', coverImage: { url: '/images/archive-covers/Oct 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - October 2002.pdf' } },
+  { id: '23', title: 'December 2002', publishDate: '2002-12-01', coverImage: { url: '/images/archive-covers/Dec 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - December 2002.pdf' } },
+  { id: '24', title: 'May 2003', publishDate: '2003-05-01', coverImage: { url: '/images/archive-covers/May 2003.png' }, fullPdf: { url: '/pdfs/archive-issues/2003/African Sun - May 2003.pdf' } },
+];
+
 // ─── BSJ Connection ──────────────────────────────────────────────────────────────────
 const BSJ_CONNECTION_POINTS = [
   { label: "Blacks on Paper (BOP)", connector: "gave us the form", detail: "The personal essay tradition BOP built from 1972 — honest, unfiltered, written for a Black audience — lives in every BSJ piece." },
@@ -72,38 +100,19 @@ const BSJ_CONNECTION_POINTS = [
 
 // ─── Main Page ──────────────────────────────────────────────────────────────────
 export default function Archives() {
-  const [africanSunIssues, setAfricanSunIssues] = useState<AfricanSunIssue[]>([]);
+  usePageTitle('Archives');
+  const [africanSunIssues] = useState<AfricanSunIssue[]>(AFRICAN_SUN_ISSUES);
   const [selectedIssue, setSelectedIssue] = useState<AfricanSunIssue | null>(null);
-  const [magazineCovers, setMagazineCovers] = useState<Media[]>([]);
 
   const getPdfUrl = (issue: AfricanSunIssue): string | undefined => {
     if (!issue.fullPdf) return undefined;
-    return resolveR2AssetUrl(issue.fullPdf);
+    return typeof issue.fullPdf === 'string' ? issue.fullPdf : issue.fullPdf.url;
   };
 
   const getCoverImageUrl = (issue: AfricanSunIssue): string | undefined => {
     if (!issue.coverImage) return undefined;
-    return resolveR2AssetUrl(issue.coverImage);
+    return typeof issue.coverImage === 'string' ? issue.coverImage : issue.coverImage.url;
   };
-
-  useEffect(() => {
-    fetch(backendApiUrl("/api/media?where[alt][equals]=AfricanSunMagazineCovers"))
-      .then(res => res.json())
-      .then(data => setMagazineCovers(data.docs))
-   }, []);
-
-  useEffect(() => {
-      fetch(backendApiUrl("/api/africansun?sort=-publishDate&limit=200&depth=2"))
-        .then(res => res.json())
-        .then(data => {
-          // Sort by publish date in descending order (newest first)
-          const sortedIssues = [...(data.docs || [])].sort(
-            (a, b) => new Date(a.publishDate).getTime() - new Date(b.publishDate).getTime()
-          );
-          setAfricanSunIssues(sortedIssues);
-        })
-        .catch(error => console.error("Error fetching African Sun issues:", error));
-    }, []);
     
   useEffect(() => {
     if (!selectedIssue) return;
@@ -122,7 +131,7 @@ export default function Archives() {
   }, [selectedIssue]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="bg-[#f97316] py-24 text-center">
@@ -144,7 +153,7 @@ export default function Archives() {
       </section>
 
       {/* ── MISSION / THROUGHLINE ────────────────────────────────── */}
-      <section className="py-20 bg-stone-50 border-b border-stone-200">
+      <section className="py-20 bg-muted/20 border-b border-border">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-full bg-[#f97316] flex items-center justify-center">
@@ -152,27 +161,27 @@ export default function Archives() {
             </div>
             <span className="text-xs font-bold tracking-widest uppercase text-[#f97316]">Before BSJ, there was a tradition</span>
           </div>
-          <h2 className="font-heading font-black text-4xl md:text-5xl text-stone-900 mb-6 leading-tight">
+          <h2 className="font-heading font-black text-4xl md:text-5xl text-foreground mb-6 leading-tight">
             Black voices built this<br /> ground before we arrived.
           </h2>
           <div className="w-16 h-1 bg-[#f97316] mb-8" />
-          <p className="font-serif text-xl text-stone-600 leading-relaxed mb-6">
+          <p className="font-serif text-xl text-muted-foreground leading-relaxed mb-6">
             The Black Star Journal did not emerge from nothing. It was born into a tradition — a decades-long lineage of Black student publications at Brown that created space, documented truth, and shaped what it meant to have a Black intellectual community on this campus.
           </p>
-          <p className="font-serif text-xl text-stone-600 leading-relaxed mb-6">
+          <p className="font-serif text-xl text-muted-foreground leading-relaxed mb-6">
             <em>African Sun</em>, <em>BOP (Black on Paper)</em>, and <em>Uwezo</em> each carved out their own era. Their editors wrote under pressure. Their contributors showed up when resources were scarce. Their issues were passed hand to hand in dining halls and dormitories.
           </p>
-          <p className="font-serif text-xl text-stone-600 leading-relaxed">
+          <p className="font-serif text-xl text-muted-foreground leading-relaxed">
             This page is their archive. Their record. Their due.
           </p>
         </div>
       </section>
 
       {/* ── PUBLICATION PROFILES ─────────────────────────────────── */}
-      <section className="py-20 bg-white border-b border-stone-200">
+      <section className="py-20 bg-background border-b border-border">
         <div className="container mx-auto px-4 max-w-5xl">
           <span className="text-xs font-bold tracking-widest uppercase text-[#f97316] mb-2 block">The publications</span>
-          <h2 className="font-heading font-black text-3xl text-stone-900 mb-12">Who They Were</h2>
+          <h2 className="font-heading font-black text-3xl text-foreground mb-12">Who They Were</h2>
           <div className="flex flex-col gap-16">
             {PUBLICATIONS_INFO.map((pub, i) => (
               <div key={pub.name} className={`grid md:grid-cols-2 gap-10 items-start ${i % 2 === 1 ? "md:flex-row-reverse" : ""}`}>
@@ -181,23 +190,23 @@ export default function Archives() {
                     style={{ background: pub.color }}>
                     Legacy Publication
                   </div>
-                  <h3 className="font-heading font-black text-3xl text-stone-900 mb-2">{pub.name}</h3>
-                  <div className="text-xs text-stone-400 tracking-widest uppercase mb-4">{pub.years}</div>
+                  <h3 className="font-heading font-black text-3xl text-foreground mb-2">{pub.name}</h3>
+                  <div className="text-xs text-muted-foreground tracking-widest uppercase mb-4">{pub.years}</div>
                   <div className="w-10 h-1 mb-6" style={{ background: pub.color }} />
-                  <p className="font-serif text-stone-600 leading-relaxed mb-4">{pub.description}</p>
-                  <p className="font-serif text-stone-500 text-sm leading-relaxed italic mb-6">{pub.legacy}</p>
+                  <p className="font-serif text-muted-foreground leading-relaxed mb-4">{pub.description}</p>
+                  <p className="font-serif text-muted-foreground text-sm leading-relaxed italic mb-6">{pub.legacy}</p>
                   <div className="flex flex-wrap gap-2">
                     {pub.knownFor.map(tag => (
-                      <span key={tag} className="px-3 py-1 bg-stone-100 text-stone-600 text-xs rounded-full font-medium">{tag}</span>
+                      <span key={tag} className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-full font-medium">{tag}</span>
                     ))}
                   </div>
                 </div>
                 <div className={`flex items-center justify-center ${i % 2 === 1 ? "md:order-1" : ""}`}>
-                  {pub.id === "african-sun" && resolveR2AssetUrl(magazineCovers[0]) ? (
+                  {pub.id === "african-sun" && AFRICAN_SUN_ISSUES[0] ? (
                     <div className="w-56 h-72 rounded-lg shadow-2xl overflow-hidden relative">
                       <img
-                        src={resolveR2AssetUrl(magazineCovers[0])}
-                        alt={magazineCovers[0].alt || "African Sun cover"}
+                        src={getCoverImageUrl(AFRICAN_SUN_ISSUES[0])}
+                        alt={AFRICAN_SUN_ISSUES[0].title}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -228,21 +237,21 @@ export default function Archives() {
       </section>
 
       {/* ── ISSUE BROWSER ─────────────────────────────────────────── */}
-      <section className="py-20 bg-stone-50 border-b border-stone-200">
+      <section className="py-20 bg-muted/20 border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-3 mb-2">
             <Calendar size={18} className="text-[#f97316]" />
             <span className="text-xs font-bold tracking-widest uppercase text-[#f97316]">African Sun timeline</span>
           </div>
-          <h2 className="font-heading font-black text-3xl text-stone-900 mb-6">African Sun Issues</h2>
+          <h2 className="font-heading font-black text-3xl text-foreground mb-6">African Sun Issues</h2>
 
           {/* Horizontal alternating timeline */}
           <div className="relative">
-            <div className="overflow-x-auto pb-8 scrollbar-thin scrollbar-thumb-stone-300 scrollbar-track-transparent">
+              <div className="overflow-x-auto pb-8 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
               <div className="relative inline-flex gap-12 px-8 min-w-full">
 
                 {/* Horizontal spine */}
-                <div className="absolute top-[220px] left-0 right-0 h-0.5 bg-stone-300" />
+                <div className="absolute top-[220px] left-0 right-0 h-0.5 bg-border" />
 
                 {africanSunIssues.map((issue, index) => {
                   const isEven = index % 2 === 0;
@@ -259,7 +268,7 @@ export default function Archives() {
 
                       {/* Vertical connector */}
                       <div
-                        className={`absolute left-1/2 w-0.5 bg-stone-300 -translate-x-1/2 ${
+                        className={`absolute left-1/2 w-0.5 bg-border -translate-x-1/2 ${
                           isEven
                             ? "top-0 h-[220px]"
                             : "top-[268px] h-[calc(100%-268px)]"
@@ -301,7 +310,7 @@ export default function Archives() {
                         {/* Timeline dot */}
                         <div className="relative z-10">
                           <div
-                            className="w-12 h-12 rounded-full border-4 bg-white shadow-lg flex items-center justify-center"
+                            className="w-12 h-12 rounded-full border-4 bg-background shadow-lg flex items-center justify-center"
                             style={{ borderColor: "#b45309" }}
                           >
                             <div
@@ -317,10 +326,10 @@ export default function Archives() {
                         <div className={isEven ? "mt-12" : "mb-12"}>
                           <div className="text-center w-[200px]">
                             <div className="text-base font-heading font-bold mb-1 text-[#b45309]">{formattedDate}</div>
-                            <div className="text-sm font-serif italic mb-1 text-stone-700 leading-snug">
+                            <div className="text-sm font-serif italic mb-1 text-foreground/70 leading-snug">
                               {issue.title}
                             </div>
-                            <div className="text-[10px] uppercase tracking-widest text-stone-400">
+                            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
                               African Sun
                             </div>
                           </div>
@@ -334,13 +343,13 @@ export default function Archives() {
             </div>
 
             {africanSunIssues.length > 3 && (
-              <div className="text-center mt-4 text-sm text-stone-400">
+              <div className="text-center mt-4 text-sm text-muted-foreground">
                 ← Scroll to explore all issues →
               </div>
             )}
           </div>
 
-          <p className="text-xs text-stone-400 mt-8 italic">
+          <p className="text-xs text-muted-foreground mt-8 italic">
             Click any card to open the full issue PDF. Archives for BOP and Uwezo coming soon.
           </p>
         </div>
@@ -367,25 +376,25 @@ export default function Archives() {
       )}
 
       {/* ── WHAT BSJ INHERITS ───── */}
-      <section className="py-24 bg-white border-t border-stone-200">
+      <section className="py-24 bg-background border-t border-border">
         <div className="container mx-auto px-4 max-w-4xl">
           <span className="text-xs font-bold tracking-widest uppercase text-[#f97316] mb-3 block">The throughline</span>
-          <h2 className="font-heading font-black text-4xl md:text-5xl text-stone-900 mb-4 leading-tight">
+          <h2 className="font-heading font-black text-4xl md:text-5xl text-foreground mb-4 leading-tight">
             What BSJ Inherits
           </h2>
-          <p className="font-serif text-stone-600 text-lg max-w-2xl mb-12">
+          <p className="font-serif text-muted-foreground text-lg max-w-2xl mb-12">
             The Black Star Journal is not a departure from this history — it is its continuation. Here is what was passed down.
           </p>
           <div className="flex flex-col gap-6">
             {BSJ_CONNECTION_POINTS.map((pt, i) => (
-              <div key={i} className="flex gap-5 items-start bg-stone-50 border border-stone-200 rounded-xl p-6">
+              <div key={i} className="flex gap-5 items-start bg-muted/30 border border-border rounded-xl p-6">
                 <div className="w-10 h-10 rounded-full bg-[#f97316] flex-shrink-0 flex items-center justify-center text-white font-bold font-heading">
                   {i + 1}
                 </div>
                 <div>
-                  <div className="font-heading font-black text-stone-900 text-lg mb-1">{pt.label}</div>
+                  <div className="font-heading font-black text-foreground text-lg mb-1">{pt.label}</div>
                   <div className="text-[#f97316] text-xs tracking-widest uppercase mb-2">{pt.connector}</div>
-                  <p className="font-serif text-stone-600 text-sm leading-relaxed">{pt.detail}</p>
+                  <p className="font-serif text-muted-foreground text-sm leading-relaxed">{pt.detail}</p>
                 </div>
               </div>
             ))}

@@ -6,3 +6,4 @@ vite.config.ts.*
 *.tar.gz
 .env
 .next
+frontend/public/pdfs/drive-download-20260405T163522Z-1-001.zip
