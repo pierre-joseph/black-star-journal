@@ -10,23 +10,23 @@ interface SearchResult {
 }
 
 const SEARCHABLE_ITEMS: SearchResult[] = [
-  { title: "Issue 01", subtitle: "February 2022", href: "/issue/01", cover: "/images/issue-covers/Issue-01.png" },
-  { title: "Issue 02", subtitle: "April 2022", href: "/issue/02", cover: "/images/issue-covers/Issue-02.png" },
-  { title: "Issue 03", subtitle: "November 2022", href: "/issue/03", cover: "/images/issue-covers/Issue-03.png" },
-  { title: "Issue 04", subtitle: "February 2023", href: "/issue/04", cover: "/images/issue-covers/Issue-04.png" },
-  { title: "Issue 05", subtitle: "October 2023", href: "/issue/05", cover: "/images/issue-covers/Issue-05.png" },
-  { title: "Issue 06", subtitle: "December 2023", href: "/issue/06", cover: "/images/issue-covers/Issue-06.png" },
-  { title: "Issue 07", subtitle: "March 2024", href: "/issue/07", cover: "/images/issue-covers/Issue-07.png" },
-  { title: "Issue 08", subtitle: "April 2024", href: "/issue/08", cover: "/images/issue-covers/Issue-08.png" },
-  { title: "Issue 09", subtitle: "October 2024", href: "/issue/09", cover: "/images/issue-covers/Issue-09.png" },
-  { title: "Issue 10", subtitle: "February 2025", href: "/issue/10", cover: "/images/issue-covers/Issue-10.png" },
-  { title: "Issue 11", subtitle: "April 2025", href: "/issue/11", cover: "/images/issue-covers/Issue-11.png" },
-  { title: "Issue 12", subtitle: "September 2025", href: "/issue/12", cover: "/images/issue-covers/Issue-12.png" },
-  { title: "Special Issue 01", subtitle: "June 2024", href: "/issue/SPECIAL", cover: "/images/issue-covers/Special Issue-01.png" },
+  { title: "Issue 01", subtitle: "February 2022", href: "/issues/01", cover: "/images/issue-covers/Issue-01.png" },
+  { title: "Issue 02", subtitle: "April 2022", href: "/issues/02", cover: "/images/issue-covers/Issue-02.png" },
+  { title: "Issue 03", subtitle: "November 2022", href: "/issues/03", cover: "/images/issue-covers/Issue-03.png" },
+  { title: "Issue 04", subtitle: "February 2023", href: "/issues/04", cover: "/images/issue-covers/Issue-04.png" },
+  { title: "Issue 05", subtitle: "October 2023", href: "/issues/05", cover: "/images/issue-covers/Issue-05.png" },
+  { title: "Issue 06", subtitle: "December 2023", href: "/issues/06", cover: "/images/issue-covers/Issue-06.png" },
+  { title: "Issue 07", subtitle: "March 2024", href: "/issues/07", cover: "/images/issue-covers/Issue-07.png" },
+  { title: "Issue 08", subtitle: "April 2024", href: "/issues/08", cover: "/images/issue-covers/Issue-08.png" },
+  { title: "Issue 09", subtitle: "October 2024", href: "/issues/09", cover: "/images/issue-covers/Issue-09.png" },
+  { title: "Issue 10", subtitle: "February 2025", href: "/issues/10", cover: "/images/issue-covers/Issue-10.png" },
+  { title: "Issue 11", subtitle: "April 2025", href: "/issues/11", cover: "/images/issue-covers/Issue-11.png" },
+  { title: "Issue 12", subtitle: "September 2025", href: "/issues/12", cover: "/images/issue-covers/Issue-12.png" },
+  { title: "Special Issue 01", subtitle: "June 2024", href: "/issues/SPECIAL", cover: "/images/issue-covers/Special Issue-01.png" },
   { title: "Our Team", subtitle: "Meet the team behind BSJ", href: "/team" },
   { title: "Sections", subtitle: "Browse by section", href: "/sections" },
   { title: "Archives", subtitle: "African Sun & historical publications", href: "/archives" },
-  { title: "BSJ Issues", subtitle: "Browse all BSJ issues", href: "/bsjissues" },
+  { title: "BSJ Issues", subtitle: "Browse all BSJ issues", href: "/issues" },
 ];
 
 export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {

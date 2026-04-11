@@ -12,6 +12,7 @@ export const Issues: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+    defaultColumns: ['issueNumber', 'title', 'publishDate'],
   },
   fields: [
     {
@@ -39,7 +40,7 @@ export const Issues: CollectionConfig = {
       name: 'fullPdf',
       type: 'upload',
       relationTo: 'media',
-      required: true,
+      required: false,
     },
     {
       name: 'coverImage',
@@ -47,14 +48,12 @@ export const Issues: CollectionConfig = {
       relationTo: 'media',
     },
     {
-      name: 'description',
-      type: 'textarea',
-    },
-    {
-      name: 'articles',
-      type: 'relationship',
-      relationTo: 'articles',
-      hasMany: true,
+      name: 'coverArtwork',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Primary artwork for the web issue spread view.',
+      },
     },
   ],
 }

@@ -1,5 +1,5 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { BlocksFeature, FixedToolbarFeature, InlineToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -10,8 +10,12 @@ import { s3Storage } from '@payloadcms/storage-s3'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Issues } from './collections/Issues'
-import { Articles } from './collections/Articles'
 import { AfricanSun } from './collections/AfricanSun'
+import { Sections } from './collections/Sections.tsx'
+import { Pieces } from './collections/Pieces.tsx'
+import { ArtworkBlock } from './blocks/ArtworkBlock'
+import { PullQuoteBlock } from './blocks/PullQuoteBlock'
+import { VisualTypographyBlock } from './blocks/VisualTypographyBlock'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -57,8 +61,17 @@ export default buildConfig({
 
   csrf: csrfOrigins,
   
-  collections: [Users, Media, Issues, Articles, AfricanSun],
-  editor: lexicalEditor(),
+  collections: [Users, Media, Issues, Sections, Pieces, AfricanSun],
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+      BlocksFeature({
+        blocks: [ArtworkBlock, PullQuoteBlock, VisualTypographyBlock],
+      }),
+    ],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

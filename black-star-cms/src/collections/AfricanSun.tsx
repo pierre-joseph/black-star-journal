@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const AfricanSun: CollectionConfig = {
   slug: 'africansun',
-  dbName: 'africansunpublications', // keep existing MongoDB collection — no data migration needed
+  dbName: 'africansunpublications',
   labels: {
     singular: 'African Sun Publication',
     plural: 'African Sun Publications',
@@ -39,16 +39,6 @@ export const AfricanSun: CollectionConfig = {
       name: 'coverImage',
       type: 'upload',
       relationTo: 'media',
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-    },
-    {
-      name: 'articles',
-      type: 'relationship',
-      relationTo: 'articles',
-      hasMany: true,
-    },
+    }
   ],
 }

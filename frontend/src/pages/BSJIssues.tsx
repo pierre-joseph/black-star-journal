@@ -1,39 +1,98 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import PDFViewer from "@/components/PDFViewer";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
+
+interface Media {
+  filename?: string | null;
+  url?: string | null;
+  alt?: string | null;
+}
 
 interface Issue {
   id: string;
   title: string;
+  slug: string;
   issueNumber: number;
   publishDate: string;
-  coverImage: string;
-  fullPdf: string;
+  coverArtwork?: Media | string | null;
+  coverImage?: Media | string | null;
+  fullPdf?: Media | string | null;
 }
 
-const ISSUES_DATA: Issue[] = [
-  { id: '01', title: 'Issue 01', issueNumber: 1, publishDate: '2022-02-01', coverImage: '/images/issue-covers/Issue-01.png', fullPdf: '/pdfs/Issue-01.pdf.pdf' },
-  { id: '02', title: 'Issue 02', issueNumber: 2, publishDate: '2022-04-01', coverImage: '/images/issue-covers/Issue-02.png', fullPdf: '/pdfs/Issue-02.pdf.pdf' },
-  { id: '03', title: 'Issue 03', issueNumber: 3, publishDate: '2022-11-01', coverImage: '/images/issue-covers/Issue-03.png', fullPdf: '/pdfs/Issue-03.pdf.pdf' },
-  { id: '04', title: 'Issue 04', issueNumber: 4, publishDate: '2023-02-01', coverImage: '/images/issue-covers/Issue-04.png', fullPdf: '/pdfs/Issue-04.pdf.pdf' },
-  { id: '05', title: 'Issue 05', issueNumber: 5, publishDate: '2023-10-01', coverImage: '/images/issue-covers/Issue-05.png', fullPdf: '/pdfs/Issue-05.pdf.pdf' },
-  { id: '06', title: 'Issue 06', issueNumber: 6, publishDate: '2023-12-01', coverImage: '/images/issue-covers/Issue-06.png', fullPdf: '/pdfs/Issue-06.pdf.pdf' },
-  { id: '07', title: 'Issue 07', issueNumber: 7, publishDate: '2024-03-01', coverImage: '/images/issue-covers/Issue-07.png', fullPdf: '/pdfs/Issue-07.pdf.pdf' },
-  { id: '08', title: 'Issue 08', issueNumber: 8, publishDate: '2024-04-01', coverImage: '/images/issue-covers/Issue-08.png', fullPdf: '/pdfs/Issue-08.pdf.pdf' },
-  { id: '09', title: 'Issue 09', issueNumber: 9, publishDate: '2024-10-01', coverImage: '/images/issue-covers/Issue-09.png', fullPdf: '/pdfs/Issue-09.pdf.pdf' },
-  { id: '10', title: 'Issue 10', issueNumber: 10, publishDate: '2025-02-01', coverImage: '/images/issue-covers/Issue-10.png', fullPdf: '/pdfs/Issue-10.pdf.pdf' },
-  { id: '11', title: 'Issue 11', issueNumber: 11, publishDate: '2025-04-01', coverImage: '/images/issue-covers/Issue-11.png', fullPdf: '/pdfs/Issue-11.pdf.pdf' },
-  { id: '12', title: 'Issue 12', issueNumber: 12, publishDate: '2025-09-01', coverImage: '/images/issue-covers/Issue-12.png', fullPdf: '/pdfs/Issue-12.pdf.pdf' },
-  { id: 'special', title: 'Special Issue 01', issueNumber: 0, publishDate: '2024-06-01', coverImage: '/images/issue-covers/Special Issue-01.png', fullPdf: '/pdfs/Special Issue-01.pdf.pdf' },
-];
+const isSpecialIssue = (issue: Issue): boolean =>
+  issue.issueNumber <= 0 ||
+  (issue.slug || "").toLowerCase().includes("special") ||
+  (issue.title || "").toLowerCase().includes("special");
+
+const sortIssuesForTimeline = (items: Issue[]): Issue[] => {
+  return [...items].sort((a, b) => {
+    const aSpecial = isSpecialIssue(a);
+    const bSpecial = isSpecialIssue(b);
+
+    if (aSpecial !== bSpecial) {
+      return aSpecial ? 1 : -1;
+    }
+
+    return a.issueNumber - b.issueNumber;
+  });
+};
+
+const getIssueRouteId = (issue: Issue): string => {
+  const slug = issue.slug?.trim();
+
+  if (slug) {
+    return slug;
+  }
+
+  if (isSpecialIssue(issue)) {
+    return "special";
+  }
+
+  return String(issue.issueNumber).padStart(2, "0");
+};
 
 export default function BSJIssues() {
   usePageTitle('BSJ Issues');
-  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [loadingIssues, setLoadingIssues] = useState(true);
 
-  const closeReader = () => setSelectedIssue(null);
-  const selectedIssuePdfUrl = selectedIssue?.fullPdf;
+  useEffect(() => {
+    let mounted = true;
+
+    const loadIssues = async () => {
+      setLoadingIssues(true);
+
+      try {
+        const response = await fetch(backendApiUrl("/api/bsjissues?sort=issueNumber&limit=200&depth=1"));
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch BSJ issues: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const docs = Array.isArray(data?.docs) ? (data.docs as Issue[]) : [];
+
+        if (!mounted) return;
+        setIssues(sortIssuesForTimeline(docs));
+      } catch (error) {
+        if (mounted) {
+          console.error("Error fetching BSJ issues:", error);
+          setIssues([]);
+        }
+      } finally {
+        if (mounted) {
+          setLoadingIssues(false);
+        }
+      }
+    };
+
+    loadIssues();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen pb-20">
@@ -49,22 +108,6 @@ export default function BSJIssues() {
         </div>
       </section>
 
-      {/* PDF READER MODAL */}
-      {selectedIssue && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60" onClick={closeReader} />
-          <div className="relative w-full max-w-7xl mx-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center p-3 bg-black/40">
-              <div className="text-white text-sm opacity-80">Issue #{selectedIssue.issueNumber} — {selectedIssue.title}</div>
-              <Button onClick={closeReader} variant="ghost" className="text-white">Close</Button>
-            </div>
-            <div className="rounded-xl overflow-hidden shadow-2xl h-[70vh]">
-              {selectedIssuePdfUrl && <PDFViewer pdfUrl={selectedIssuePdfUrl} onClose={closeReader} />}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* TIMELINE */}
       <section className="py-20 border-b border-border bg-muted/20">
         <div className="container mx-auto px-4">
@@ -74,9 +117,13 @@ export default function BSJIssues() {
               {/* Timeline spine */}
               <div className="absolute top-[240px] left-0 right-0 h-1 bg-primary/30" />
 
-              {ISSUES_DATA.map((issue, index) => {
+              {issues.map((issue, index) => {
                 const isEven = index % 2 === 0;
                 const dateStr = new Date(issue.publishDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                const coverImageUrl =
+                  resolveR2AssetUrl(issue.coverArtwork) ??
+                  resolveR2AssetUrl(issue.coverImage);
+                const issueRouteId = getIssueRouteId(issue);
 
                 return (
                   <div key={issue.id} className="relative flex-shrink-0 w-[240px]">
@@ -84,19 +131,25 @@ export default function BSJIssues() {
                     <div className={`absolute left-1/2 w-0.5 bg-primary/30 -translate-x-1/2 ${isEven ? 'top-0 h-[240px]' : 'top-[288px] h-[140px]'}`} />
 
                     {/* Content */}
-                    <div className={`flex flex-col ${isEven ? 'items-center' : 'items-center flex-col-reverse'}`}>
+                    <Link
+                      to={`/issues/${issueRouteId}`}
+                      className={`flex flex-col group ${isEven ? 'items-center' : 'items-center flex-col-reverse'}`}
+                    >
                       {/* Cover */}
                       <div className={isEven ? 'mb-8' : 'mt-8'}>
                         <div
-                          onClick={() => setSelectedIssue(issue)}
-                          className={`w-[200px] aspect-[3/4] bg-white border shadow-lg relative group cursor-pointer hover:scale-105 transition-transform duration-300 ${
-                            selectedIssue?.id === issue.id ? 'border-primary border-4 ring-4 ring-primary/20' : 'border-border'
-                          }`}
+                          className="w-[200px] aspect-[3/4] bg-white border border-border shadow-lg relative transition-transform duration-300 cursor-pointer hover:scale-105"
                         >
-                          <img src={issue.coverImage} alt={issue.title} className="w-full h-full object-cover" />
+                          {coverImageUrl ? (
+                            <img src={coverImageUrl} alt={issue.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs text-center px-3">
+                              Cover unavailable
+                            </div>
+                          )}
                           <div className="absolute inset-0 bg-orange-600/90 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-center px-3 gap-1">
                             <div className="text-white text-sm italic">{issue.title}</div>
-                            <div className="text-white text-xs tracking-widest uppercase">Read</div>
+                            <div className="text-white text-xs tracking-widest uppercase">View Issue</div>
                           </div>
                         </div>
                       </div>
@@ -104,7 +157,9 @@ export default function BSJIssues() {
                       {/* Timeline dot */}
                       <div className="relative z-10 -my-2">
                         <div className="w-10 h-10 rounded-full border-4 bg-white border-primary shadow-lg flex items-center justify-center">
-                          <div className="text-xs font-bold text-primary">#{issue.issueNumber}</div>
+                          <div className="text-xs font-bold text-primary">
+                            {isSpecialIssue(issue) ? 'S' : `#${String(issue.issueNumber)}`}
+                          </div>
                         </div>
                       </div>
 
@@ -115,12 +170,20 @@ export default function BSJIssues() {
                           <div className="text-xs uppercase tracking-widest text-muted-foreground">{issue.title}</div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 );
               })}
             </div>
           </div>
+
+          {loadingIssues && (
+            <p className="text-center text-sm text-muted-foreground mt-4">Loading issues...</p>
+          )}
+
+          {!loadingIssues && issues.length === 0 && (
+            <p className="text-center text-sm text-muted-foreground mt-4">No BSJ issues available yet.</p>
+          )}
         </div>
       </section>
     </div>

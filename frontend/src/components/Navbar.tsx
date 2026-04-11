@@ -9,8 +9,9 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [dark, setDark] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem('bsj-dark') === 'true';
+    if (typeof window === 'undefined') return true;
+    const savedPreference = localStorage.getItem('bsj-dark');
+    return savedPreference === null ? true : savedPreference === 'true';
   });
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export function Navbar() {
     { href: "/", label: "HOME" },
     { href: "/team", label: "OUR TEAM" },
     { href: "/sections", label: "SECTIONS" },
-    { href: "/bsjissues", label: "BSJ ISSUES" },
+    { href: "/issues", label: "BSJ ISSUES" },
     { href: "/archives", label: "ARCHIVES" }
   ];
 

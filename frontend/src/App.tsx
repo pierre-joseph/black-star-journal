@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import Home from "@/pages/Home";
 import Team from "@/pages/Team";
 import Sections from "@/pages/Sections";
+import SectionPiece from "@/pages/SectionPiece";
 import Issue from "@/pages/Issue";
 import BSJIssues from "./pages/BSJIssues";
 import Archives from "@/pages/Archives";
@@ -50,8 +51,10 @@ function Router() {
               <Route path="/" element={<Home />} />
               <Route path="/team" element={<Team />} />
               <Route path="/sections" element={<Sections />} />
-              <Route path="/issue/:id" element={<Issue />} />
-              <Route path="/bsjissues" element={<BSJIssues />} />
+              <Route path="/sections/:issueId" element={<Sections />} />
+              <Route path="/sections/:issueId/pieces/:pieceSlug" element={<SectionPiece />} />
+              <Route path="/issues/:id" element={<Issue />} />
+              <Route path="/issues" element={<BSJIssues />} />
               <Route path="/archives" element={<Archives />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

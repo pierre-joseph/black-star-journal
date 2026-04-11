@@ -3,6 +3,7 @@ import { BookOpen, Calendar } from "lucide-react";
 import PDFViewer from "@/components/PDFViewer";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
 
 // ─── Publication Profiles ──────────────────────────────────────────────────────
 
@@ -63,34 +64,6 @@ interface AfricanSunIssue {
   description?: string;
 }
 
-// ─── African Sun Issues (Local Data) ────────────────────────────────────────
-const AFRICAN_SUN_ISSUES: AfricanSunIssue[] = [
-  { id: '1', title: 'May 1991', publishDate: '1991-05-01', coverImage: { url: '/images/archive-covers/May 1991.png' }, fullPdf: { url: '/pdfs/archive-issues/1991/African Sun - May 1991.pdf' } },
-  { id: '2', title: 'September 1991', publishDate: '1991-09-01', coverImage: { url: '/images/archive-covers/Sep 1991.png' }, fullPdf: { url: '/pdfs/archive-issues/1991/African Sun - September 1991.pdf' } },
-  { id: '3', title: 'November 1991', publishDate: '1991-11-01', coverImage: { url: '/images/archive-covers/Nov 1991.png' }, fullPdf: { url: '/pdfs/archive-issues/1991/African Sun - November 1991.pdf' } },
-  { id: '4', title: 'December 1991', publishDate: '1991-12-01', coverImage: { url: '/images/archive-covers/Dec 1991.png' }, fullPdf: { url: '/pdfs/archive-issues/1991/African Sun - December 1991.pdf' } },
-  { id: '5', title: 'February 1992', publishDate: '1992-02-01', coverImage: { url: '/images/archive-covers/Feb 1992.png' }, fullPdf: { url: '/pdfs/archive-issues/1992/African Sun - Feb 1992.pdf' } },
-  { id: '6', title: 'March 1992', publishDate: '1992-03-01', coverImage: { url: '/images/archive-covers/March 1992.png' }, fullPdf: { url: '/pdfs/archive-issues/1992/African Sun - March 1992.pdf' } },
-  { id: '7', title: 'September 1992', publishDate: '1992-09-01', coverImage: { url: '/images/archive-covers/Sept 1992.png' }, fullPdf: { url: '/pdfs/archive-issues/1992/African Sun - Sept 1992.pdf' } },
-  { id: '8', title: 'October 1992', publishDate: '1992-10-01', coverImage: { url: '/images/archive-covers/Oct 1992.png' }, fullPdf: { url: '/pdfs/archive-issues/1992/African Sun - Oct 1992.pdf' } },
-  { id: '9', title: 'February 1993', publishDate: '1993-02-01', coverImage: { url: '/images/archive-covers/Feb 1993.png' }, fullPdf: { url: '/pdfs/archive-issues/1993/African Sun - Feb 1993.pdf' } },
-  { id: '10', title: 'May 1993', publishDate: '1993-05-01', coverImage: { url: '/images/archive-covers/May 1993.png' }, fullPdf: { url: '/pdfs/archive-issues/1993/African Sun - May 1993.pdf' } },
-  { id: '11', title: 'September 1993', publishDate: '1993-09-01', coverImage: { url: '/images/archive-covers/Sept 1993.png' }, fullPdf: { url: '/pdfs/archive-issues/1993/African Sun - Sept 1993.pdf' } },
-  { id: '12', title: 'October 1993', publishDate: '1993-10-01', coverImage: { url: '/images/archive-covers/Oct 1993.png' }, fullPdf: { url: '/pdfs/archive-issues/1993/African Sun - Oct 1993.pdf' } },
-  { id: '13', title: 'January & February 1994', publishDate: '1994-01-01', coverImage: { url: '/images/archive-covers/Jan and Feb 1994.png' }, fullPdf: { url: '/pdfs/archive-issues/1994/African Sun - Jan_Feb 1994.pdf' } },
-  { id: '14', title: 'March 1994', publishDate: '1994-03-01', coverImage: { url: '/images/archive-covers/March 1994.png' }, fullPdf: { url: '/pdfs/archive-issues/1994/African Sun - March 1994.pdf' } },
-  { id: '15', title: 'May 1996', publishDate: '1996-05-01', coverImage: { url: '/images/archive-covers/May 1996.png' }, fullPdf: { url: '/pdfs/archive-issues/1996/African Sun - May 1996 (Issue #4).pdf' } },
-  { id: '16', title: 'April 1997', publishDate: '1997-04-01', coverImage: { url: '/images/archive-covers/April 1997.png' }, fullPdf: { url: '/pdfs/archive-issues/1997/African Sun - April 1997 (Issue #1).pdf' } },
-  { id: '17', title: 'December 1997', publishDate: '1997-12-01', coverImage: { url: '/images/archive-covers/Dec 1997.png' }, fullPdf: { url: '/pdfs/archive-issues/1997/African Sun - November 1997.pdf' } },
-  { id: '18', title: 'December 2001', publishDate: '2001-12-01', coverImage: { url: '/images/archive-covers/Dec 2001.png' }, fullPdf: { url: '/pdfs/archive-issues/2001/African Sun - December 2001.pdf' } },
-  { id: '19', title: 'February 2002', publishDate: '2002-02-01', coverImage: { url: '/images/archive-covers/Feb 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - February 2002.pdf' } },
-  { id: '20', title: 'March 2002', publishDate: '2002-03-01', coverImage: { url: '/images/archive-covers/March 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - March 2002.pdf' } },
-  { id: '21', title: 'April 2002', publishDate: '2002-04-01', coverImage: { url: '/images/archive-covers/April 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - April 2002.pdf' } },
-  { id: '22', title: 'October 2002', publishDate: '2002-10-01', coverImage: { url: '/images/archive-covers/Oct 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - October 2002.pdf' } },
-  { id: '23', title: 'December 2002', publishDate: '2002-12-01', coverImage: { url: '/images/archive-covers/Dec 2002.png' }, fullPdf: { url: '/pdfs/archive-issues/2002/African Sun - December 2002.pdf' } },
-  { id: '24', title: 'May 2003', publishDate: '2003-05-01', coverImage: { url: '/images/archive-covers/May 2003.png' }, fullPdf: { url: '/pdfs/archive-issues/2003/African Sun - May 2003.pdf' } },
-];
-
 // ─── BSJ Connection ──────────────────────────────────────────────────────────────────
 const BSJ_CONNECTION_POINTS = [
   { label: "Blacks on Paper (BOP)", connector: "gave us the form", detail: "The personal essay tradition BOP built from 1972 — honest, unfiltered, written for a Black audience — lives in every BSJ piece." },
@@ -101,18 +74,72 @@ const BSJ_CONNECTION_POINTS = [
 // ─── Main Page ──────────────────────────────────────────────────────────────────
 export default function Archives() {
   usePageTitle('Archives');
-  const [africanSunIssues] = useState<AfricanSunIssue[]>(AFRICAN_SUN_ISSUES);
+  const [africanSunIssues, setAfricanSunIssues] = useState<AfricanSunIssue[]>([]);
   const [selectedIssue, setSelectedIssue] = useState<AfricanSunIssue | null>(null);
+  const [magazineCovers, setMagazineCovers] = useState<Media[]>([]);
+  const [loadingIssues, setLoadingIssues] = useState(true);
 
-  const getPdfUrl = (issue: AfricanSunIssue): string | undefined => {
-    if (!issue.fullPdf) return undefined;
-    return typeof issue.fullPdf === 'string' ? issue.fullPdf : issue.fullPdf.url;
+  const getPdfUrl = (issue?: AfricanSunIssue | null): string | undefined => {
+    if (!issue?.fullPdf) return undefined;
+    return resolveR2AssetUrl(issue.fullPdf);
   };
 
-  const getCoverImageUrl = (issue: AfricanSunIssue): string | undefined => {
-    if (!issue.coverImage) return undefined;
-    return typeof issue.coverImage === 'string' ? issue.coverImage : issue.coverImage.url;
+  const getCoverImageUrl = (issue?: AfricanSunIssue | null): string | undefined => {
+    if (!issue?.coverImage) return undefined;
+    return resolveR2AssetUrl(issue.coverImage);
   };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadArchiveData = async () => {
+      setLoadingIssues(true);
+
+      try {
+        const [issuesResponse, coversResponse] = await Promise.all([
+          fetch(backendApiUrl("/api/africansun?sort=-publishDate&limit=200&depth=2")),
+          fetch(backendApiUrl("/api/media?where[alt][equals]=AfricanSunMagazineCovers&limit=1")),
+        ]);
+
+        if (!issuesResponse.ok) {
+          throw new Error(`Failed to fetch African Sun issues: ${issuesResponse.status}`);
+        }
+
+        const issuesData = await issuesResponse.json();
+        const coversData = coversResponse.ok ? await coversResponse.json() : { docs: [] };
+
+        if (!mounted) return;
+
+        const docs = Array.isArray(issuesData?.docs) ? (issuesData.docs as AfricanSunIssue[]) : [];
+        const sortedIssues = [...docs].sort(
+          (a, b) => new Date(a.publishDate).getTime() - new Date(b.publishDate).getTime()
+        );
+
+        setAfricanSunIssues(sortedIssues);
+        setMagazineCovers(Array.isArray(coversData?.docs) ? (coversData.docs as Media[]) : []);
+      } catch (error) {
+        if (mounted) {
+          console.error("Error fetching archive data:", error);
+          setAfricanSunIssues([]);
+          setMagazineCovers([]);
+        }
+      } finally {
+        if (mounted) {
+          setLoadingIssues(false);
+        }
+      }
+    };
+
+    loadArchiveData();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const firstArchiveIssue = africanSunIssues[0];
+  const featuredArchiveCover = resolveR2AssetUrl(magazineCovers[0]) ?? getCoverImageUrl(firstArchiveIssue);
+  const featuredArchiveAlt = magazineCovers[0]?.alt || firstArchiveIssue?.title || "African Sun cover";
     
   useEffect(() => {
     if (!selectedIssue) return;
@@ -202,11 +229,11 @@ export default function Archives() {
                   </div>
                 </div>
                 <div className={`flex items-center justify-center ${i % 2 === 1 ? "md:order-1" : ""}`}>
-                  {pub.id === "african-sun" && AFRICAN_SUN_ISSUES[0] ? (
+                  {pub.id === "african-sun" && featuredArchiveCover ? (
                     <div className="w-56 h-72 rounded-lg shadow-2xl overflow-hidden relative">
                       <img
-                        src={getCoverImageUrl(AFRICAN_SUN_ISSUES[0])}
-                        alt={AFRICAN_SUN_ISSUES[0].title}
+                        src={featuredArchiveCover}
+                        alt={featuredArchiveAlt}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -345,6 +372,18 @@ export default function Archives() {
             {africanSunIssues.length > 3 && (
               <div className="text-center mt-4 text-sm text-muted-foreground">
                 ← Scroll to explore all issues →
+              </div>
+            )}
+
+            {loadingIssues && (
+              <div className="text-center mt-4 text-sm text-muted-foreground">
+                Loading archive issues...
+              </div>
+            )}
+
+            {!loadingIssues && africanSunIssues.length === 0 && (
+              <div className="text-center mt-4 text-sm text-muted-foreground">
+                No African Sun issues available yet.
               </div>
             )}
           </div>

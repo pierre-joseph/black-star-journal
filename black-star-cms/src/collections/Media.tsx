@@ -25,6 +25,32 @@ export const Media: CollectionConfig = {
       type: 'textarea',
     },
     {
+      name: 'assetType',
+      type: 'select',
+      options: [
+        { label: 'General', value: 'general' },
+        { label: 'Cover Artwork', value: 'cover-artwork' },
+        { label: 'Inline Artwork', value: 'inline-artwork' },
+        { label: 'Illustration', value: 'illustration' },
+      ],
+      defaultValue: 'general',
+    },
+    {
+      name: 'artistName',
+      type: 'text',
+      admin: {
+        description: 'Artist credit, for example Marie Auguste or Jessie Owusu.',
+      },
+    },
+    {
+      name: 'sourceIssue',
+      type: 'relationship',
+      relationTo: 'bsjissues',
+      admin: {
+        description: 'Attach media to the BSJ issue where this artwork appears.',
+      },
+    },
+    {
       name: 'page',
       type: 'number',
       admin: {

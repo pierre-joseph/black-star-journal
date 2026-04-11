@@ -4,8 +4,7 @@ import PDFViewer from "@/components/PDFViewer";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { FadeIn } from "@/components/FadeIn";
 import { useParallax } from "@/hooks/useParallax";
-import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
-import { Link } from "react-router-dom";
+import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
 
 interface Media {
   url: string;
@@ -20,42 +19,78 @@ interface Issue {
   slug: string;
   issueNumber: number;
   publishDate: string;
-  coverImage: Media;
-  fullPdf: Media;
-  description?: string;
+  coverArtwork?: Media | string | null;
+  coverImage?: Media | string | null;
+  fullPdf?: Media | string | null;
 }
-
-const ISSUES_DATA: Issue[] = [
-  { id: '12', issueNumber: 12, title: 'Issue 12', slug: '12', publishDate: '2025-09-01', coverImage: { url: '/images/issue-covers/Issue-12.png' }, fullPdf: { url: '/pdfs/Issue-12.pdf.pdf' } },
-  { id: '11', issueNumber: 11, title: 'Issue 11', slug: '11', publishDate: '2025-04-01', coverImage: { url: '/images/issue-covers/Issue-11.png' }, fullPdf: { url: '/pdfs/Issue-11.pdf.pdf' } },
-  { id: '10', issueNumber: 10, title: 'Issue 10', slug: '10', publishDate: '2024-11-01', coverImage: { url: '/images/issue-covers/Issue-10.png' }, fullPdf: { url: '/pdfs/Issue-10.pdf.pdf' } },
-  { id: '09', issueNumber: 9, title: 'Issue 09', slug: '09', publishDate: '2024-09-01', coverImage: { url: '/images/issue-covers/Issue-09.png' }, fullPdf: { url: '/pdfs/Issue-09.pdf.pdf' } },
-  { id: '08', issueNumber: 8, title: 'Issue 08', slug: '08', publishDate: '2024-04-01', coverImage: { url: '/images/issue-covers/Issue-08.png' }, fullPdf: { url: '/pdfs/Issue-08.pdf.pdf' } },
-  { id: '07', issueNumber: 7, title: 'Issue 07', slug: '07', publishDate: '2024-03-01', coverImage: { url: '/images/issue-covers/Issue-07.png' }, fullPdf: { url: '/pdfs/Issue-07.pdf.pdf' } },
-  { id: '06', issueNumber: 6, title: 'Issue 06', slug: '06', publishDate: '2024-02-01', coverImage: { url: '/images/issue-covers/Issue-06.png' }, fullPdf: { url: '/pdfs/Issue-06.pdf.pdf' } },
-  { id: '05', issueNumber: 5, title: 'Issue 05', slug: '05', publishDate: '2024-01-01', coverImage: { url: '/images/issue-covers/Issue-05.png' }, fullPdf: { url: '/pdfs/Issue-05.pdf.pdf' } },
-  { id: '04', issueNumber: 4, title: 'Issue 04', slug: '04', publishDate: '2023-11-01', coverImage: { url: '/images/issue-covers/Issue-04.png' }, fullPdf: { url: '/pdfs/Issue-04.pdf.pdf' } },
-  { id: '03', issueNumber: 3, title: 'Issue 03', slug: '03', publishDate: '2023-04-01', coverImage: { url: '/images/issue-covers/Issue-03.png' }, fullPdf: { url: '/pdfs/Issue-03.pdf.pdf' } },
-  { id: '02', issueNumber: 2, title: 'Issue 02', slug: '02', publishDate: '2022-10-01', coverImage: { url: '/images/issue-covers/Issue-02.png' }, fullPdf: { url: '/pdfs/Issue-02.pdf.pdf' } },
-  { id: '01', issueNumber: 1, title: 'Issue 01', slug: '01', publishDate: '2022-02-01', coverImage: { url: '/images/issue-covers/Issue-01.png' }, fullPdf: { url: '/pdfs/Issue-01.pdf.pdf' } },
-];
 
 export default function Home() {
   usePageTitle();
   const [videoReady, setVideoReady] = useState(false);
   const parallaxOffset = useParallax(0.3);
-  const { recent } = useRecentlyViewed();
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [heroMedia, setHeroMedia] = useState<Media | null>(null);
+  const [loadingIssues, setLoadingIssues] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setVideoReady(true), 1500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadHomepageData = async () => {
+      setLoadingIssues(true);
+
+      try {
+        const [issuesResponse, heroMediaResponse] = await Promise.all([
+          fetch(backendApiUrl("/api/bsjissues?sort=-issueNumber&limit=12&depth=1")),
+          fetch(backendApiUrl("/api/media?where[alt][equals]=BSJ8CoverImage&limit=1")),
+        ]);
+
+        if (!issuesResponse.ok) {
+          throw new Error(`Failed to fetch issues: ${issuesResponse.status}`);
+        }
+
+        const issuesData = await issuesResponse.json();
+        const heroData = heroMediaResponse.ok ? await heroMediaResponse.json() : { docs: [] };
+
+        if (!mounted) return;
+
+        const docs = Array.isArray(issuesData?.docs) ? (issuesData.docs as Issue[]) : [];
+        const sortedIssues = [...docs].sort((a, b) => b.issueNumber - a.issueNumber);
+
+        setIssues(sortedIssues);
+        setHeroMedia(Array.isArray(heroData?.docs) ? (heroData.docs[0] ?? null) : null);
+      } catch (error) {
+        if (mounted) {
+          console.error("Failed to load homepage CMS data", error);
+          setIssues([]);
+          setHeroMedia(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoadingIssues(false);
+        }
+      }
+    };
+
+    loadHomepageData();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const [showPDF, setShowPDF] = useState(false);
-  const issues = ISSUES_DATA;
 
   const latestIssue = issues[0];
-  const latestIssueCoverUrl = latestIssue?.coverImage?.url;
-  const latestIssuePdfUrl = latestIssue?.fullPdf?.url;
+  const latestIssueCoverUrl =
+    resolveR2AssetUrl(latestIssue?.coverArtwork) ??
+    resolveR2AssetUrl(latestIssue?.coverImage);
+  const latestIssuePdfUrl = resolveR2AssetUrl(latestIssue?.fullPdf);
+  const heroCoverUrl = resolveR2AssetUrl(heroMedia) ?? latestIssueCoverUrl;
 
   return (
     <div className="flex flex-col gap-12 pb-20 pt-10">
@@ -182,12 +217,18 @@ export default function Home() {
           </FadeIn>
           <FadeIn direction="right" delay={200}>
           <div className="relative aspect-square md:aspect-video rounded-xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
-            <img 
-              src="/images/issue-covers/Issue-06.png" 
-              alt="BSJ Issue 6 Cover Image" 
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+            {heroCoverUrl ? (
+              <img
+                src={heroCoverUrl}
+                alt={heroMedia?.alt || "Black Star Journal feature image"}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
+                {loadingIssues ? "Loading image..." : "Feature image unavailable"}
+              </div>
+            )}
             <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
           </div>
           </FadeIn>
@@ -200,17 +241,23 @@ export default function Home() {
           <FadeIn direction="up">
           <div className="text-center mb-12">
             <span className="text-sm font-bold tracking-widest uppercase text-primary mb-2 block">Current Edition</span>
-            <h2 className="font-heading font-black text-4xl md:text-5xl">BSJ ISSUE #{issues[0]?.issueNumber}</h2>
+            <h2 className="font-heading font-black text-4xl md:text-5xl">BSJ ISSUE #{latestIssue?.issueNumber ?? "--"}</h2>
           </div>
           </FadeIn>
           
           {!showPDF ? (
             <FadeIn direction="up" delay={150}>
             <div className="flex flex-col items-center gap-6 mb-12">
-              <img src={latestIssueCoverUrl} alt="Cover of the current issue" className="h-[800px] object-cover shadow-2xl" loading="lazy" />
+              {latestIssueCoverUrl ? (
+                <img src={latestIssueCoverUrl} alt="Cover of the current issue" className="h-[800px] object-cover shadow-2xl" loading="lazy" />
+              ) : (
+                <div className="h-[800px] w-full max-w-[560px] bg-muted rounded-lg border border-border flex items-center justify-center text-muted-foreground">
+                  {loadingIssues ? "Loading current issue..." : "No current issue cover available"}
+                </div>
+              )}
               <Button 
                 onClick={() => setShowPDF(true)}
-                disabled={!latestIssuePdfUrl}
+                disabled={!latestIssuePdfUrl || !latestIssue}
                 className="bg-[#f97316] hover:bg-[#ea580c] text-white font-bold px-8 py-6 text-lg"
               >
                 Open & Read
@@ -239,29 +286,6 @@ export default function Home() {
           )}
         </div>
       </section>
-
-      {/* Recently Viewed */}
-      {recent.length > 0 && (
-        <section className="container mx-auto px-4">
-          <FadeIn direction="up">
-            <h2 className="font-heading font-bold text-xl text-foreground mb-4 tracking-wide uppercase">Recently Viewed</h2>
-            <div className="flex gap-4 overflow-x-auto pb-4">
-              {recent.map((r) => (
-                <Link key={r.id} to={`/issue/${r.id}`} className="flex-shrink-0 group">
-                  <div className="w-28 h-40 rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-                    <img src={r.cover} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1.5 text-center w-28 truncate">{r.title}</p>
-                  <p className="text-[10px] text-muted-foreground/60 text-center w-28">
-                    {new Date(r.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}{' '}
-                    {new Date(r.timestamp).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </FadeIn>
-        </section>
-      )}
 
       {/* Get Involved CTA */}
       <section className="container mx-auto px-4">

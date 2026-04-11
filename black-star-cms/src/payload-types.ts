@@ -70,7 +70,8 @@ export interface Config {
     users: User;
     media: Media;
     bsjissues: Bsjissue;
-    articles: Article;
+    sections: Section;
+    pieces: Piece;
     africansun: Africansun;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -82,7 +83,8 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     bsjissues: BsjissuesSelect<false> | BsjissuesSelect<true>;
-    articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    sections: SectionsSelect<false> | SectionsSelect<true>;
+    pieces: PiecesSelect<false> | PiecesSelect<true>;
     africansun: AfricansunSelect<false> | AfricansunSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -156,6 +158,15 @@ export interface Media {
   id: string;
   alt: string;
   caption?: string | null;
+  assetType?: ('general' | 'cover-artwork' | 'inline-artwork' | 'illustration') | null;
+  /**
+   * Artist credit, for example Marie Auguste or Jessie Owusu.
+   */
+  artistName?: string | null;
+  /**
+   * Attach media to the BSJ issue where this artwork appears.
+   */
+  sourceIssue?: (string | null) | Bsjissue;
   /**
    * Page number to navigate to in PDF
    */
@@ -182,24 +193,62 @@ export interface Bsjissue {
   slug: string;
   issueNumber: number;
   publishDate: string;
-  fullPdf: string | Media;
+  fullPdf?: (string | null) | Media;
   coverImage?: (string | null) | Media;
-  description?: string | null;
-  articles?: (string | Article)[] | null;
+  /**
+   * Primary artwork for the web issue spread view.
+   */
+  coverArtwork?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
+ * via the `definition` "sections".
  */
-export interface Article {
+export interface Section {
+  id: string;
+  title: 'Columns' | 'Art and Culture' | 'Society and News' | 'Local' | 'Stories';
+  slug: string;
+  issue: string | Bsjissue;
+  order: number;
+  /**
+   * Optional hex color for section labels, for example #f97316.
+   */
+  accentColor?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pieces".
+ */
+export interface Piece {
   id: string;
   title: string;
+  slug: string;
   issue: string | Bsjissue;
-  author: string;
-  publishDate: string;
-  content: {
+  /**
+   * Select an issue first to filter section options correctly.
+   */
+  section: string | Section;
+  pieceType: 'article' | 'poem' | 'column' | 'story' | 'snapshot';
+  publishOrder: number;
+  authors: {
+    name: string;
+    role?: string | null;
+    id?: string | null;
+  }[];
+  excerpt?: string | null;
+  /**
+   * Hero artwork shown at the top of the piece reading view.
+   */
+  leadArtwork?: (string | null) | Media;
+  artCredit?: string | null;
+  /**
+   * Use the + menu to insert Artwork Blocks between stanzas for custom poem layouts.
+   */
+  body: {
     root: {
       type: string;
       children: {
@@ -214,8 +263,6 @@ export interface Article {
     };
     [k: string]: unknown;
   };
-  excerpt?: string | null;
-  featuredImage?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -230,8 +277,6 @@ export interface Africansun {
   publishDate: string;
   fullPdf: string | Media;
   coverImage?: (string | null) | Media;
-  description?: string | null;
-  articles?: (string | Article)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -272,8 +317,12 @@ export interface PayloadLockedDocument {
         value: string | Bsjissue;
       } | null)
     | ({
-        relationTo: 'articles';
-        value: string | Article;
+        relationTo: 'sections';
+        value: string | Section;
+      } | null)
+    | ({
+        relationTo: 'pieces';
+        value: string | Piece;
       } | null)
     | ({
         relationTo: 'africansun';
@@ -352,6 +401,9 @@ export interface UsersSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  assetType?: T;
+  artistName?: T;
+  sourceIssue?: T;
   page?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -376,23 +428,45 @@ export interface BsjissuesSelect<T extends boolean = true> {
   publishDate?: T;
   fullPdf?: T;
   coverImage?: T;
-  description?: T;
-  articles?: T;
+  coverArtwork?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles_select".
+ * via the `definition` "sections_select".
  */
-export interface ArticlesSelect<T extends boolean = true> {
+export interface SectionsSelect<T extends boolean = true> {
   title?: T;
+  slug?: T;
   issue?: T;
-  author?: T;
-  publishDate?: T;
-  content?: T;
+  order?: T;
+  accentColor?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pieces_select".
+ */
+export interface PiecesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  issue?: T;
+  section?: T;
+  pieceType?: T;
+  publishOrder?: T;
+  authors?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        id?: T;
+      };
   excerpt?: T;
-  featuredImage?: T;
+  leadArtwork?: T;
+  artCredit?: T;
+  body?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -406,8 +480,6 @@ export interface AfricansunSelect<T extends boolean = true> {
   publishDate?: T;
   fullPdf?: T;
   coverImage?: T;
-  description?: T;
-  articles?: T;
   updatedAt?: T;
   createdAt?: T;
 }
