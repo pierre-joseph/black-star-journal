@@ -275,7 +275,15 @@ export default function Sections() {
         ...bundle,
         pieces: [...bundle.pieces].sort((a, b) => (a.publishOrder || 999) - (b.publishOrder || 999)),
       }))
-      .sort((a, b) => normalizeSectionOrder(a.section.order) - normalizeSectionOrder(b.section.order))
+      .sort((a, b) => {
+        const byPieceCount = b.pieces.length - a.pieces.length
+
+        if (byPieceCount !== 0) {
+          return byPieceCount
+        }
+
+        return normalizeSectionOrder(a.section.order) - normalizeSectionOrder(b.section.order)
+      })
   }, [pieces, sections])
 
   const activeIssueRouteId = activeIssue ? getIssueRouteId(activeIssue) : ''
@@ -328,11 +336,8 @@ export default function Sections() {
             </div>
 
             <h1 className="font-heading text-4xl font-black leading-tight md:text-6xl">
-              {getIssueDisplayLabel(activeIssue)}
-            </h1>
-            <p className="mt-3 text-lg text-white/80 md:text-2xl">
               {activeIssue.title}
-            </p>
+            </h1>
             <p className="mt-4 max-w-2xl text-white/75">
               A visual table of contents for this issue. Each piece keeps BSJ artwork central while shifting the reading experience to a web-native format.
             </p>
@@ -389,12 +394,6 @@ export default function Sections() {
               <section key={section.id} className="rounded-3xl border border-border bg-card/40 p-6 md:p-7">
                 <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
                   <div>
-                    <p
-                      className="mb-2 text-xs font-bold uppercase tracking-[0.2em]"
-                      style={section.accentColor ? { color: section.accentColor } : undefined}
-                    >
-                      {section.title}
-                    </p>
                     <h2 className="font-heading text-3xl font-black md:text-4xl">{section.title}</h2>
                     {section.intro ? <p className="mt-3 text-muted-foreground">{section.intro}</p> : null}
                   </div>
