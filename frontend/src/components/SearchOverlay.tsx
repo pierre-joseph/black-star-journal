@@ -25,6 +25,7 @@ const SEARCHABLE_ITEMS: SearchResult[] = [
   { title: "Special Issue 01", subtitle: "June 2024", href: "/issues/SPECIAL", cover: "/images/issue-covers/Special Issue-01.png" },
   { title: "Our Team", subtitle: "Meet the team behind BSJ", href: "/team" },
   { title: "Sections", subtitle: "Browse by section", href: "/sections" },
+  { title: "Events", subtitle: "BSJ community events and gatherings", href: "/events" },
   { title: "Archives", subtitle: "African Sun & historical publications", href: "/archives" },
   { title: "BSJ Issues", subtitle: "Browse all BSJ issues", href: "/issues" },
 ];

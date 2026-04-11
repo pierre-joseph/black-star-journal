@@ -15,6 +15,7 @@ import SectionPiece from "@/pages/SectionPiece";
 import Issue from "@/pages/Issue";
 import BSJIssues from "./pages/BSJIssues";
 import Archives from "@/pages/Archives";
+import Events from "@/pages/Events";
 import NotFound from "@/pages/not-found";
 
 function PageTransition({ children }: { children: React.ReactNode }) {
@@ -55,6 +56,7 @@ function Router() {
               <Route path="/sections/:issueId/pieces/:pieceSlug" element={<SectionPiece />} />
               <Route path="/issues/:id" element={<Issue />} />
               <Route path="/issues" element={<BSJIssues />} />
+              <Route path="/events" element={<Events />} />
               <Route path="/archives" element={<Archives />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -25,6 +25,7 @@ export function Footer() {
           <div className="flex gap-6 flex-wrap justify-center">
             <a href="/#mission" onClick={scrollToMission} className="hover:text-gray-300 font-medium uppercase tracking-wider text-sm cursor-pointer">About Us</a>
             <Link to="/sections" className="hover:text-gray-300 font-medium uppercase tracking-wider text-sm">Sections</Link>
+            <Link to="/events" className="hover:text-gray-300 font-medium uppercase tracking-wider text-sm">Events</Link>
             <Link to="/archives" className="hover:text-gray-300 font-medium uppercase tracking-wider text-sm">Archives</Link>
           </div>
 

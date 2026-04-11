@@ -24,6 +24,7 @@ export function Navbar() {
     { href: "/team", label: "OUR TEAM" },
     { href: "/sections", label: "SECTIONS" },
     { href: "/issues", label: "BSJ ISSUES" },
+    { href: "/events", label: "EVENTS" },
     { href: "/archives", label: "ARCHIVES" }
   ];
 
