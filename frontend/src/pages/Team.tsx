@@ -11,90 +11,141 @@ const staffData = [
     id: "editors-in-chief",
     title: "Editors-in-Chief",
     members: [
-      { name: "Nelia Tiemtore", role: "Editor-in-Chief" },
-      { name: "Kourtney Beauvais", role: "Editor-in-Chief" }
+      { role: "Editor-in-Chief", name: "Nelsa Tiemtore" },
+      { role: "Editor-in-Chief", name: "Kourtney Beauvais" }
+    ]
+  },
+  {
+    id: "managing-editor",
+    title: "Managing Editor",
+    members: [
+      { role: "Managing Editor", name: "Destiny Kristina" },
+      { role: "Managing Editor", name: "Don Shombusho" }
     ]
   },
   {
     id: "advisor",
     title: "Advisor",
-    members: [{ name: "Destiny Wilson", role: "Advisor" }]
+    members: [{ role: "Advisor", name: "Destiny Wilson" }]
+  },
+  {
+    id: "treasurer",
+    title: "Treasurer",
+    members: [{ role: "Treasurer", name: "Kaliyah Graham" }]
+  },
+  {
+    id: "copy-editor",
+    title: "Copy Editor",
+    members: [{ role: "Copy Editor", name: "Eniola Okon" }]
   },
   {
     id: "arts-culture",
     title: "Arts & Culture",
     members: [
-      "Zola Narisetti", "Maisie Bennett", "Nina Jeffries-El", "Chanel Baxter",
-      "Emmanuel Chery", "Nyiah Harrison", "Mountika Katta", "Natalie Payne",
-      "Daniel Malikba", "Arya Gibson"
-    ].map(name => ({ name, role: "Arts & Culture" }))
+      { role: "Section Editor", name: "Nina Jeffries-El" },
+      { role: "Section Editor", name: "Mansie Bennett" },
+      { role: "Staff Writer", name: "Emmanuel Chery" },
+      { role: "Staff Writer", name: "Nyjah Harrison" },
+      { role: "Staff Writer", name: "Mounika Katta" },
+      { role: "Staff Writer", name: "Chanel Baxter" },
+      { role: "Staff Writer", name: "Daniel Nkalubo" },
+      { role: "Staff Writer", name: "Natalie Payne" },
+      { role: "Staff Writer", name: "Asya Gipson" },
+      { role: "Staff Writer", name: "Alexandria Goodman" }
+    ]
   },
   {
     id: "columns",
     title: "Columns",
     members: [
-      "Destiny Kristine", "Paris Carney", "Favour Akpokere", "Yennie Berta",
-      "Riki Dourthia", "Richery Jassath", "Sonam Shulman"
-    ].map(name => ({ name, role: "Columnist" }))
+      { role: "Section Editor", name: "Destiny Kristina" },
+      { role: "Section Editor", name: "Paris Carney" },
+      { role: "Staff Writer", name: "Yenee Berta" },
+      { role: "Staff Writer", name: "Sonam Shulman" },
+      { role: "Staff Writer", name: "Favour Akpokiere" },
+      { role: "Staff Writer", name: "Rohey Jasseh" },
+      { role: "Staff Writer", name: "Riki Doumbia" }
+    ]
+  },
+  {
+    id: "stories",
+    title: "Stories",
+    members: [
+      { role: "Section Editor", name: "Zahira Walker" },
+      { role: "Staff Writer", name: "Jannah Maguire" },
+      { role: "Staff Writer", name: "Nyria Delph" },
+      { role: "Staff Writer", name: "Julie Hajducky" }
+    ]
   },
   {
     id: "society-news",
     title: "Society & News",
-    members: ["Don Shumbusho", "Ava Sharma", "Rashaun Bertrand", "Inu Obilo"]
-      .map(name => ({ name, role: "Society & News" }))
-  },
-  {
-    id: "stories",
-    title: "Stories Team",
     members: [
-      "Zahira Branch", "Sienna Amenumey", "Mara Dufrin Clark",
-      "Janna Maguire", "Michelle Toptas"
-    ].map(name => ({ name, role: "Stories" }))
+      { role: "Section Editor", name: "Don Shumbusho" },
+      { role: "Section Editor", name: "Ava Sharma" },
+      { role: "Staff Writer", name: "Izu Obialo" },
+      { role: "Staff Writer", name: "Rashaun Bertrand" },
+      { role: "Staff Writer", name: "Zoe Plunkett" }
+    ]
   },
   {
     id: "content",
-    title: "Content Team",
+    title: "Content",
     members: [
-      "Aurora Idahosa", "Riki Beryene", "Farhiya Omar", "Moana Marr",
-      "Jordan Kinley", "Yennie Berta", "Kierra Reese"
-    ].map(name => ({ name, role: "Content" }))
-  },
-  {
-    id: "copy-editor",
-    title: "Copy Editor",
-    members: [{ name: "Enjola Olan", role: "Copy Editor" }]
-  },
-  {
-    id: "layout",
-    title: "Layout Team",
-    members: ["Sydney Johnson", "Nina Jeffries-El"].map(name => ({ name, role: "Layout" }))
+      { role: "Content Lead", name: "Nina Jeffries-El" },
+      { role: "Content Creator", name: "Aisosa Idahosa" },
+      { role: "Content Creator", name: "Rita Beyene" },
+      { role: "Content Creator (Photographer)", name: "Farhiyo Omar" },
+      { role: "Content Creator", name: "Moana Marx" },
+      { role: "Content Creator", name: "Jordan Kinley" },
+      { role: "Content Creator", name: "Kierra Reese" },
+      { role: "Content Creator", name: "Yenee Berta" },
+      { role: "Content Creator", name: "Kayla Randolph" },
+      { role: "Content Creator", name: "Shamari Reed" },
+      { role: "Content Creator (Photographer)", name: "Laeticia Paul" }
+    ]
   },
   {
     id: "social",
-    title: "Social Team",
-    members: [{ name: "Ramataoulaye Tall", role: "Social" }]
+    title: "Social",
+    members: [
+      { role: "Social Lead", name: "Ramatoulaye Tall" },
+      { role: "Social Media Content Creator", name: "Kierra Reese" },
+      { role: "Social Media Content Creator", name: "Laeticia Paul" }
+    ]
   },
   {
     id: "website",
-    title: "Website Team",
-    members: ["Zamora McBride", "Pierre Joseph", "Mamadou Konyate"]
-      .map(name => ({ name, role: "Website" }))
+    title: "Website",
+    members: [
+      { role: "Website Co-Lead", name: "Mamadou Kouyate" },
+      { role: "Website Co-Lead", name: "Pierre Joseph" }
+    ]
   },
   {
-    id: "community-liaisons",
-    title: "Community Liaisons",
-    members: ["Sage Freeman", "Imani Morenyang", "Felker Wolde"]
-      .map(name => ({ name, role: "Community Liaison" }))
+    id: "layout",
+    title: "Layout",
+    members: [
+      { role: "Team Member", name: "Nina Jeffries-El" },
+      { role: "Team Member", name: "Sydney Johnson" }
+    ]
   },
   {
-    id: "treasurer",
-    title: "Treasurer",
-    members: [{ name: "Kaliyah Graham", role: "Treasurer" }]
+    id: "community-liaison-event-coordinator",
+    title: "Community Liaison / Event Coordinator",
+    members: [
+      { role: "Coordinator", name: "Sage Freeman" },
+      { role: "Coordinator", name: "Imani Moneyang" },
+      { role: "Coordinator", name: "Feker Wolde" }
+    ]
   },
   {
-    id: "archivists",
-    title: "Archivists",
-    members: ["Marc Bustamante-Dorawa", "Vera Koontz"].map(name => ({ name, role: "Archivist" }))
+    id: "archiving",
+    title: "Archiving",
+    members: [
+      { role: "Co-Archivist", name: "Vera Koontz" },
+      { role: "Co-Archivist", name: "Mares Bustamante-Donawa" }
+    ]
   }
 ];
 
