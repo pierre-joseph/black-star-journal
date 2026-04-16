@@ -324,13 +324,13 @@ export default function Sections() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <section className="relative overflow-hidden border-b border-border bg-[radial-gradient(circle_at_top,_#2b1808_0%,_#1f1207_45%,_#101010_100%)] text-white">
-        <div className="absolute -top-24 -right-20 h-64 w-64 rounded-full bg-[#f97316]/30 blur-3xl" />
-        <div className="absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
+      <section className="relative overflow-hidden border-b border-[#f0d6b6] bg-[radial-gradient(circle_at_top,_#fff6e8_0%,_#fff1dd_45%,_#ffe7c9_100%)] text-[#4a2a13] dark:border-border dark:bg-[radial-gradient(circle_at_top,_#2b1808_0%,_#1f1207_45%,_#101010_100%)] dark:text-white">
+        <div className="absolute -top-24 -right-20 h-64 w-64 rounded-full bg-[#f97316]/25 blur-3xl dark:bg-[#f97316]/30" />
+        <div className="absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-[#fff7ed]/80 blur-3xl dark:bg-white/5" />
 
         <div className="container relative z-10 mx-auto grid items-center gap-8 px-4 py-14 md:grid-cols-12 md:py-20">
           <div className="md:col-span-7">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/80">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f97316]/30 bg-white/70 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-[#9a3412] dark:border-white/20 dark:bg-white/10 dark:text-white/80">
               <Palette className="h-3.5 w-3.5" />
               Issue Spread
             </div>
@@ -338,7 +338,7 @@ export default function Sections() {
             <h1 className="font-heading text-4xl font-black leading-tight md:text-6xl">
               {activeIssue.title}
             </h1>
-            <p className="mt-4 max-w-2xl text-white/75">
+            <p className="mt-4 max-w-2xl text-[#7c4a2a]/85 dark:text-white/75">
               A visual table of contents for this issue. Each piece keeps BSJ artwork central while shifting the reading experience to a web-native format.
             </p>
 
@@ -354,8 +354,8 @@ export default function Sections() {
                     className={cn(
                       'rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-colors',
                       isCurrent
-                        ? 'border-white bg-white text-[#7c2d12]'
-                        : 'border-white/25 text-white/75 hover:border-white hover:text-white'
+                        ? 'border-[#f97316]/40 bg-white text-[#7c2d12] shadow-sm dark:border-white dark:bg-white dark:text-[#7c2d12]'
+                        : 'border-[#d6b089] text-[#7c4a2a]/85 hover:border-[#f97316]/60 hover:text-[#7c2d12] dark:border-white/25 dark:text-white/75 dark:hover:border-white dark:hover:text-white'
                     )}
                   >
                     {getIssueDisplayLabel(issue)}
@@ -367,12 +367,12 @@ export default function Sections() {
 
           <div className="md:col-span-5 md:justify-self-end">
             {heroCoverUrl ? (
-              <div className="relative w-full max-w-[360px] overflow-hidden rounded-[1.75rem] border border-white/20 bg-white/10 p-3 shadow-2xl backdrop-blur-sm">
+              <div className="relative w-full max-w-[360px] overflow-hidden rounded-[1.75rem] border border-[#f1c8a2] bg-white/75 p-3 shadow-2xl backdrop-blur-sm dark:border-white/20 dark:bg-white/10">
                 <img src={heroCoverUrl} alt={activeIssue.title} className="h-auto w-full rounded-2xl object-cover" loading="lazy" />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#7c2d12]/30 via-transparent to-transparent dark:from-black/50" />
               </div>
             ) : (
-              <div className="w-full max-w-[360px] rounded-[1.75rem] border border-white/20 bg-white/10 p-8 text-center text-sm text-white/70">
+              <div className="w-full max-w-[360px] rounded-[1.75rem] border border-[#f1c8a2] bg-white/75 p-8 text-center text-sm text-[#7c4a2a] dark:border-white/20 dark:bg-white/10 dark:text-white/70">
                 Cover artwork coming soon.
               </div>
             )}

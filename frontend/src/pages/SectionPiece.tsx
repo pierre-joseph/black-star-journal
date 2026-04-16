@@ -220,32 +220,32 @@ export default function SectionPiece() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <section className="relative overflow-hidden border-b border-border bg-[radial-gradient(circle_at_top,_#2b1808_0%,_#130f0c_48%,_#080808_100%)] text-white">
-        <div className="absolute -left-20 top-8 h-52 w-52 rounded-full bg-[#f97316]/20 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
+      <section className="relative overflow-hidden border-b border-[#f0d6b6] bg-[radial-gradient(circle_at_top,_#fff6e8_0%,_#fff1dd_45%,_#ffe7c9_100%)] text-[#4a2a13] dark:border-border dark:bg-[radial-gradient(circle_at_top,_#2b1808_0%,_#130f0c_48%,_#080808_100%)] dark:text-white">
+        <div className="absolute -left-20 top-8 h-52 w-52 rounded-full bg-[#f97316]/25 blur-3xl dark:bg-[#f97316]/20" />
+        <div className="absolute bottom-0 right-0 h-56 w-56 rounded-full bg-[#fff7ed]/80 blur-3xl dark:bg-white/5" />
         <div className="container relative z-10 mx-auto px-4 py-12 md:py-16">
           <Link
             to={`/sections/${issueRouteId}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-white/70 transition-colors hover:text-white"
+            className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#7c4a2a]/80 transition-colors hover:text-[#7c2d12] dark:text-white/70 dark:hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to {issueLabel}
           </Link>
 
           <div className="mt-6 max-w-4xl">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/80">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#f97316]/30 bg-white/70 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-[#9a3412] dark:border-white/20 dark:bg-white/10 dark:text-white/80">
               <BookOpenText className="h-3.5 w-3.5" />
               {PIECE_TYPE_LABEL[piece.pieceType]}
             </div>
             <h1 className="font-heading text-4xl font-black leading-tight md:text-6xl">{piece.title}</h1>
-            <p className="mt-3 text-sm uppercase tracking-[0.18em] text-white/70">{authorsLabel}</p>
-            <p className="mt-3 max-w-2xl text-white/80">
+            <p className="mt-3 text-sm uppercase tracking-[0.18em] text-[#7c4a2a]/80 dark:text-white/70">{authorsLabel}</p>
+            <p className="mt-3 max-w-2xl text-[#7c4a2a]/90 dark:text-white/80">
               {piece.excerpt || issue.title}
             </p>
-            <div className="mt-6 flex flex-wrap gap-2 text-xs uppercase tracking-[0.18em] text-white/65">
-              <span className="rounded-full border border-white/20 px-3 py-1">{issueLabel}</span>
+            <div className="mt-6 flex flex-wrap gap-2 text-xs uppercase tracking-[0.18em] text-[#7c4a2a]/75 dark:text-white/65">
+              <span className="rounded-full border border-[#d6b089] bg-white/50 px-3 py-1 dark:border-white/20 dark:bg-transparent">{issueLabel}</span>
               {section ? (
-                <span className="rounded-full border border-white/20 px-3 py-1" style={section.accentColor ? { borderColor: section.accentColor, color: section.accentColor } : undefined}>
+                <span className="rounded-full border border-[#d6b089] bg-white/50 px-3 py-1 dark:border-white/20 dark:bg-transparent" style={section.accentColor ? { borderColor: section.accentColor, color: section.accentColor } : undefined}>
                   {section.title}
                 </span>
               ) : null}

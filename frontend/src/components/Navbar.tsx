@@ -9,9 +9,9 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [dark, setDark] = useState(() => {
-    if (typeof window === 'undefined') return true;
+    if (typeof window === 'undefined') return false;
     const savedPreference = localStorage.getItem('bsj-dark');
-    return savedPreference === null ? true : savedPreference === 'true';
+    return savedPreference === null ? false : savedPreference === 'true';
   });
 
   useEffect(() => {
