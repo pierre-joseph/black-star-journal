@@ -55,6 +55,7 @@ const getIssueRouteId = (issue: Issue): string => {
 export default function BSJIssues() {
   usePageTitle('BSJ Issues');
   const [issues, setIssues] = useState<Issue[]>([]);
+  const [heroBackgroundUrl, setHeroBackgroundUrl] = useState<string | null>(null);
   const [loadingIssues, setLoadingIssues] = useState(true);
 
   useEffect(() => {
@@ -64,6 +65,30 @@ export default function BSJIssues() {
       setLoadingIssues(true);
 
       try {
+        let nextHeroBackgroundUrl: string | null = null;
+        const heroBackgroundResponse = await fetch(
+          backendApiUrl("/api/media?where[alt][equals]=bsjissuesbg&limit=1&depth=0")
+        );
+
+        if (heroBackgroundResponse.ok) {
+          const heroBackgroundData = await heroBackgroundResponse.json();
+          const heroBackgroundDoc = Array.isArray(heroBackgroundData?.docs)
+            ? (heroBackgroundData.docs[0] as Media | undefined)
+            : undefined;
+
+          const resolvedHeroBackgroundUrl = heroBackgroundDoc
+            ? resolveR2AssetUrl(heroBackgroundDoc)
+            : undefined;
+
+          if (resolvedHeroBackgroundUrl) {
+            nextHeroBackgroundUrl = resolvedHeroBackgroundUrl;
+          } else if (heroBackgroundDoc?.url) {
+            nextHeroBackgroundUrl = heroBackgroundDoc.url.startsWith("http")
+              ? heroBackgroundDoc.url
+              : backendApiUrl(heroBackgroundDoc.url);
+          }
+        }
+
         const response = await fetch(backendApiUrl("/api/bsjissues?sort=issueNumber&limit=200&depth=1"));
 
         if (!response.ok) {
@@ -75,10 +100,12 @@ export default function BSJIssues() {
 
         if (!mounted) return;
         setIssues(sortIssuesForTimeline(docs));
+        setHeroBackgroundUrl(nextHeroBackgroundUrl);
       } catch (error) {
         if (mounted) {
           console.error("Error fetching BSJ issues:", error);
           setIssues([]);
+          setHeroBackgroundUrl(null);
         }
       } finally {
         if (mounted) {
@@ -97,7 +124,21 @@ export default function BSJIssues() {
   return (
     <div className="min-h-screen pb-20">
       {/* HERO */}
-      <section className="bg-[#f97316] py-24 text-center">
+      <section
+        className="py-24 text-center"
+        style={
+          heroBackgroundUrl
+            ? {
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("${heroBackgroundUrl}")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }
+            : {
+                backgroundColor: "#000000",
+              }
+        }
+      >
         <div className="container mx-auto px-4">
           <p className="text-white/70 text-sm font-bold tracking-widest uppercase mb-4">Since 2021</p>
           <h1 className="font-heading font-black text-5xl md:text-8xl mb-6 text-white leading-tight">THE FULL BSJ ISSUES</h1>

@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import PDFViewer from "@/components/PDFViewer";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { FadeIn } from "@/components/FadeIn";
-import { useParallax } from "@/hooks/useParallax";
 import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
 
 interface Media {
@@ -26,16 +25,10 @@ interface Issue {
 
 export default function Home() {
   usePageTitle();
-  const [videoReady, setVideoReady] = useState(false);
-  const parallaxOffset = useParallax(0.3);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [heroMedia, setHeroMedia] = useState<Media | null>(null);
+  const [homeBackgroundUrl, setHomeBackgroundUrl] = useState<string | null>(null);
   const [loadingIssues, setLoadingIssues] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setVideoReady(true), 1500);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -44,9 +37,10 @@ export default function Home() {
       setLoadingIssues(true);
 
       try {
-        const [issuesResponse, heroMediaResponse] = await Promise.all([
+        const [issuesResponse, heroMediaResponse, homeBackgroundResponse] = await Promise.all([
           fetch(backendApiUrl("/api/bsjissues?sort=-issueNumber&limit=12&depth=1")),
           fetch(backendApiUrl("/api/media?where[alt][equals]=BSJ8CoverImage&limit=1")),
+          fetch(backendApiUrl("/api/media?where[alt][equals]=homebg&limit=1&depth=0")),
         ]);
 
         if (!issuesResponse.ok) {
@@ -55,19 +49,40 @@ export default function Home() {
 
         const issuesData = await issuesResponse.json();
         const heroData = heroMediaResponse.ok ? await heroMediaResponse.json() : { docs: [] };
+        const homeBackgroundData = homeBackgroundResponse.ok
+          ? await homeBackgroundResponse.json()
+          : { docs: [] };
 
         if (!mounted) return;
 
         const docs = Array.isArray(issuesData?.docs) ? (issuesData.docs as Issue[]) : [];
         const sortedIssues = [...docs].sort((a, b) => b.issueNumber - a.issueNumber);
 
+        const homeBackgroundDoc = Array.isArray(homeBackgroundData?.docs)
+          ? (homeBackgroundData.docs[0] as Media | undefined)
+          : undefined;
+
+        const resolvedHomeBackgroundUrl = homeBackgroundDoc
+          ? resolveR2AssetUrl(homeBackgroundDoc)
+          : undefined;
+
+        const nextHomeBackgroundUrl = resolvedHomeBackgroundUrl
+          ? resolvedHomeBackgroundUrl
+          : homeBackgroundDoc?.url
+            ? homeBackgroundDoc.url.startsWith("http")
+              ? homeBackgroundDoc.url
+              : backendApiUrl(homeBackgroundDoc.url)
+            : null;
+
         setIssues(sortedIssues);
         setHeroMedia(Array.isArray(heroData?.docs) ? (heroData.docs[0] ?? null) : null);
+        setHomeBackgroundUrl(nextHomeBackgroundUrl);
       } catch (error) {
         if (mounted) {
           console.error("Failed to load homepage CMS data", error);
           setIssues([]);
           setHeroMedia(null);
+          setHomeBackgroundUrl(null);
         }
       } finally {
         if (mounted) {
@@ -94,103 +109,77 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-12 pb-20 pt-10">
-      {/* Hero Section with YouTube Video Background */}
-      <section className="relative overflow-hidden">
-        {/* YouTube Video Background */}
-        <div
-          className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
-          style={{ transform: `translateY(${parallaxOffset}px)` }}
-        >
-          {/* Black cover to hide YT branding during load */}
-          <div
-            className="absolute inset-0 z-10 bg-black transition-opacity duration-700"
-            style={{ opacity: videoReady ? 0 : 1, pointerEvents: 'none' }}
-          />
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/JS-FsGwGMYw?autoplay=1&mute=1&loop=1&playlist=JS-FsGwGMYw&controls=0&showinfo=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3&start=0&vq=hd1080"
-            title="Brown University Background Video"
-            className="absolute top-1/2 left-1/2"
-            style={{
-              border: 'none',
-              width: 'max(100%, 177.78vh)',
-              height: 'max(100%, 56.25vw)',
-              transform: 'translate(-50%, -50%)',
-            }}
-            allow="autoplay; encrypted-media"
-            tabIndex={-1}
-          />
-        </div>
+      {/* Hero Section with CMS image background */}
+      <section className="relative overflow-hidden h-[90vh] min-h-[600px]">
 
-        {/* Decorative Stars */}
-        <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
-          {/* Large star — top right */}
-          <svg className="absolute top-8 right-[12%] w-14 h-14 text-[#f97316] opacity-90 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
-          </svg>
-          {/* Medium star — left side near title */}
-          <svg className="absolute top-[30%] left-[8%] w-8 h-8 text-white opacity-70" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
-          </svg>
-          {/* Small star — bottom left */}
-          <svg className="absolute bottom-[15%] left-[18%] w-5 h-5 text-[#f97316] opacity-60" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
-          </svg>
-          {/* Tiny star — top left */}
-          <svg className="absolute top-[15%] left-[25%] w-4 h-4 text-white opacity-50" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
-          </svg>
-          {/* Medium star — right side mid */}
-          <svg className="absolute top-[55%] right-[5%] w-7 h-7 text-[#f97316] opacity-75 animate-pulse" style={{ animationDelay: '1s' }} viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
-          </svg>
-          {/* Small star — center top */}
-          <svg className="absolute top-[10%] left-[50%] w-5 h-5 text-white opacity-40" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
-          </svg>
-          {/* Tiny star — bottom right */}
-          <svg className="absolute bottom-[25%] right-[22%] w-3 h-3 text-white opacity-55" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
-          </svg>
-        </div>
+  {/* Background */}
+  <div className="absolute inset-0 z-0">
+    {homeBackgroundUrl ? (
+      <img
+        src={homeBackgroundUrl}
+        alt="Providence Background"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+    ) : (
+      <div className="absolute inset-0 bg-[#1a1a1a]" />
+    )}
+    {/* Dark gradient overlay for legibility */}
+    <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+  </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 container mx-auto px-4 py-32 md:py-24">
-          <div className="grid md:grid-cols-12 gap-8 items-start">
-            
-            {/* Left Column: Text */}
-            <div className="md:col-span-5 flex flex-col justify-center h-full pt-20">
-              <h1
-                className="font-sans font-black text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.9] text-white mb-6"
-                style={{ WebkitTextStroke: '2px black', paintOrder: 'stroke fill', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}
-              >
-                THE<br />
-                BLACK<br />
-                STAR<br />
-                JOURNAL
-              </h1>
-              
-              <div className="mt-auto">
-                <p
-                  className="font-serif text-lg leading-relaxed text-white max-w-md bg-black/60 backdrop-blur-sm rounded-lg px-4 py-3 border border-black/80"
-                >
-                  Amplifying Black voices. Celebrating Black excellence. Building community at Brown and RISD.
-                </p>
-              </div>
-            </div>
+  {/* Hero Content */}
+  <div className="relative z-30 h-full flex flex-col justify-end pb-16 md:pb-20">
+    <div className="container mx-auto px-6 md:px-10">
 
-            {/* Right Column: Image */}
-            <div className="md:col-span-7">
-              <div className="rounded-xl overflow-hidden shadow-2xl border-2 border-black">
-                <img 
-                  src="/images/pink_room.png"
-                  alt="Image of Pink Room" 
-                  className="w-full h-auto object-cover aspect-[4/3]"
-                />
-              </div>
-            </div>
-          </div>
+      {/* Eyebrow */}
+      <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-[#f97316] mb-4">
+        Brown University & RISD · Est. 2021
+      </p>
+
+      {/* Title */}
+      <h1
+        style={{
+          fontFamily: 'Impact, "Arial Narrow", sans-serif',
+          fontSize: 'clamp(56px, 10vw, 130px)',
+          lineHeight: 0.88,
+          letterSpacing: '-0.01em',
+          fontWeight: 900,
+          textTransform: 'uppercase',
+          color: '#fff',
+        }}
+      >
+        The Black<br />Star Journal
+      </h1>
+
+      {/* Divider */}
+      <div className="w-12 h-0.5 bg-[#f97316] my-6" />
+
+      {/* Tagline + CTA row */}
+      <div className="flex flex-col sm:flex-row sm:items-end gap-6">
+        <p className="font-serif text-lg leading-relaxed text-white/80 italic max-w-sm">
+          Amplifying Black voices. Celebrating Black excellence. Building community at Brown and RISD.
+        </p>
+        <div className="flex gap-3 sm:mb-1">
+          <button
+            onClick={() => document.getElementById('current-issue')
+              ?.scrollIntoView({ behavior: 'smooth' })}
+            className="bg-[#f97316] text-black font-sans text-[10px] font-black tracking-[0.18em] uppercase px-5 py-2.5 hover:bg-[#ea580c] transition-colors"
+          >
+            Read Current Issue
+          </button>
+          <a
+            href="/issues"
+            className="border border-white/30 text-white font-sans text-[10px] tracking-[0.18em] uppercase px-5 py-2.5 hover:border-white hover:text-white transition-colors"
+          >
+            All Issues
+          </a>
         </div>
-      </section>
+      </div>
+
+    </div>
+  </div>
+
+</section>
 
       {/* Mission Section */}
       <section id="mission" className="container mx-auto px-4 py-16">
@@ -235,8 +224,48 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Founder Story */}
+      <section className="container mx-auto px-4">
+        <FadeIn direction="up">
+          <div className="rounded-2xl border border-border bg-card/60 p-6 md:p-8">
+            <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#f97316] mb-3">
+              How It Started
+            </p>
+            <h2 className="font-heading font-black text-3xl md:text-4xl mb-4 leading-tight">
+              Founded to fill the record.
+            </h2>
+            <p className="font-serif text-lg leading-relaxed text-muted-foreground">
+              The Black Star Journal was founded in 2021 by Amiri Nash '24 and Keiley
+              Thompson '24 - two Brown sophomores who noticed something missing. After
+              searching campus archives for evidence of Black student life and finding
+              almost none, Nash reached out to Thompson with a simple idea: build the
+              publication that should have always existed. What started as a conversation
+              became Brown's first newspaper dedicated entirely to the Black experience.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <a
+                href="https://www.bostonglobe.com/2022/04/04/metro/brown-university-students-launch-black-star-journal-document-black-joy-experiences/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 font-sans text-xs font-bold tracking-[0.15em] uppercase text-[#f97316] hover:underline"
+              >
+                Boston Globe story →
+              </a>
+              <a
+                href="https://www.brownalumnimagazine.com/articles/2022-06-09/a-star-is-born"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 font-sans text-xs font-bold tracking-[0.15em] uppercase text-[#f97316] hover:underline"
+              >
+                Brown Alumni Magazine story →
+              </a>
+            </div>
+          </div>
+        </FadeIn>
+      </section>
+
       {/* Featured Issue Section */}
-      <section className="bg-muted/30 py-20 border-y border-border">
+      <section id="current-issue" className="bg-muted/30 py-20 border-y border-border">
         <div className="container mx-auto px-4">
           <FadeIn direction="up">
           <div className="text-center mb-12">
@@ -266,13 +295,13 @@ export default function Home() {
             </FadeIn>
           ) : (
             <div className="max-w-7xl mx-auto">
-              {latestIssuePdfUrl && (
+              {latestIssuePdfUrl ? (
                 <PDFViewer 
                   pdfUrl={latestIssuePdfUrl} 
                   initialPage={1}
                   onClose={() => setShowPDF(false)} 
                 />
-              )}
+              ) : null}
               <div className="text-center mt-6">
                 <Button 
                   onClick={() => setShowPDF(false)}

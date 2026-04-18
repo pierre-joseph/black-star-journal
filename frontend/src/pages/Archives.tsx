@@ -77,6 +77,7 @@ export default function Archives() {
   const [africanSunIssues, setAfricanSunIssues] = useState<AfricanSunIssue[]>([]);
   const [selectedIssue, setSelectedIssue] = useState<AfricanSunIssue | null>(null);
   const [magazineCovers, setMagazineCovers] = useState<Media[]>([]);
+  const [heroBackgroundUrl, setHeroBackgroundUrl] = useState<string | null>(null);
   const [loadingIssues, setLoadingIssues] = useState(true);
 
   const getPdfUrl = (issue?: AfricanSunIssue | null): string | undefined => {
@@ -96,9 +97,10 @@ export default function Archives() {
       setLoadingIssues(true);
 
       try {
-        const [issuesResponse, coversResponse] = await Promise.all([
+        const [issuesResponse, coversResponse, heroBackgroundResponse] = await Promise.all([
           fetch(backendApiUrl("/api/africansun?sort=-publishDate&limit=200&depth=2")),
           fetch(backendApiUrl("/api/media?where[alt][equals]=AfricanSunMagazineCovers&limit=1")),
+          fetch(backendApiUrl("/api/media?where[alt][equals]=archivesbg&limit=1&depth=0")),
         ]);
 
         if (!issuesResponse.ok) {
@@ -107,6 +109,7 @@ export default function Archives() {
 
         const issuesData = await issuesResponse.json();
         const coversData = coversResponse.ok ? await coversResponse.json() : { docs: [] };
+        const heroBackgroundData = heroBackgroundResponse.ok ? await heroBackgroundResponse.json() : { docs: [] };
 
         if (!mounted) return;
 
@@ -115,13 +118,31 @@ export default function Archives() {
           (a, b) => new Date(a.publishDate).getTime() - new Date(b.publishDate).getTime()
         );
 
+        const heroBackgroundDoc = Array.isArray(heroBackgroundData?.docs)
+          ? (heroBackgroundData.docs[0] as Media | undefined)
+          : undefined;
+
+        const resolvedHeroBackgroundUrl = heroBackgroundDoc
+          ? resolveR2AssetUrl(heroBackgroundDoc)
+          : undefined;
+
+        const nextHeroBackgroundUrl = resolvedHeroBackgroundUrl
+          ? resolvedHeroBackgroundUrl
+          : heroBackgroundDoc?.url
+            ? heroBackgroundDoc.url.startsWith("http")
+              ? heroBackgroundDoc.url
+              : backendApiUrl(heroBackgroundDoc.url)
+            : null;
+
         setAfricanSunIssues(sortedIssues);
         setMagazineCovers(Array.isArray(coversData?.docs) ? (coversData.docs as Media[]) : []);
+        setHeroBackgroundUrl(nextHeroBackgroundUrl);
       } catch (error) {
         if (mounted) {
           console.error("Error fetching archive data:", error);
           setAfricanSunIssues([]);
           setMagazineCovers([]);
+          setHeroBackgroundUrl(null);
         }
       } finally {
         if (mounted) {
@@ -161,7 +182,21 @@ export default function Archives() {
     <div className="min-h-screen bg-background">
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
-      <section className="bg-[#f97316] py-24 text-center">
+      <section
+        className="py-24 text-center"
+        style={
+          heroBackgroundUrl
+            ? {
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.50)), url("${heroBackgroundUrl}")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }
+            : {
+                backgroundColor: "#000000",
+              }
+        }
+      >
         <div className="container mx-auto px-4">
           <p className="text-white/70 text-sm font-bold tracking-widest uppercase mb-4">
             Brown University · Black Publication History
@@ -173,7 +208,7 @@ export default function Archives() {
           <p className="font-serif text-xl md:text-2xl text-white/90 max-w-2xl mx-auto leading-relaxed">
             A tribute to the Black publications that came before us — and the students who built them.
           </p>
-          <p className="text-white/50 text-xs tracking-widest uppercase mt-4">
+          <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-[#f97316] mt-4">
             African Sun · BOP · Uwezo · and more
           </p>
         </div>

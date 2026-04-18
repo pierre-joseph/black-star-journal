@@ -81,6 +81,7 @@ export default function Events() {
   usePageTitle("Events");
 
   const [eventMediaById, setEventMediaById] = useState<Record<string, Media[]>>({});
+  const [heroBackgroundUrl, setHeroBackgroundUrl] = useState<string | null>(null);
   const [loadingMedia, setLoadingMedia] = useState(true);
 
   useEffect(() => {
@@ -93,6 +94,30 @@ export default function Events() {
         const mediaMap = Object.fromEntries(
           EVENT_ITEMS.map((eventItem) => [eventItem.id, [] as Media[]])
         ) as Record<string, Media[]>;
+
+        let nextHeroBackgroundUrl: string | null = null;
+        const heroBackgroundResponse = await fetch(
+          backendApiUrl("/api/media?where[alt][equals]=eventsbg&limit=1&depth=0")
+        );
+
+        if (heroBackgroundResponse.ok) {
+          const heroBackgroundData = await heroBackgroundResponse.json();
+          const heroBackgroundDoc = Array.isArray(heroBackgroundData?.docs)
+            ? (heroBackgroundData.docs[0] as Media | undefined)
+            : undefined;
+
+          const resolvedHeroBackgroundUrl = heroBackgroundDoc
+            ? resolveR2AssetUrl(heroBackgroundDoc)
+            : undefined;
+
+          if (resolvedHeroBackgroundUrl) {
+            nextHeroBackgroundUrl = resolvedHeroBackgroundUrl;
+          } else if (heroBackgroundDoc?.url) {
+            nextHeroBackgroundUrl = heroBackgroundDoc.url.startsWith("http")
+              ? heroBackgroundDoc.url
+              : backendApiUrl(heroBackgroundDoc.url);
+          }
+        }
 
         let page = 1;
         let totalPages = 1;
@@ -136,10 +161,12 @@ export default function Events() {
         });
 
         setEventMediaById(mediaMap);
+        setHeroBackgroundUrl(nextHeroBackgroundUrl);
       } catch (error) {
         if (mounted) {
           console.error("Failed to load event media", error);
           setEventMediaById({});
+          setHeroBackgroundUrl(null);
         }
       } finally {
         if (mounted) {
@@ -157,7 +184,21 @@ export default function Events() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <section className="bg-[#f97316] py-24 text-center">
+      <section
+        className="py-24 text-center"
+        style={
+          heroBackgroundUrl
+            ? {
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)), url("${heroBackgroundUrl}")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }
+            : {
+                backgroundColor: "#000000",
+              }
+        }
+      >
         <div className="container mx-auto px-4">
           <p className="text-white/70 text-sm font-bold tracking-widest uppercase mb-4">BSJ Community</p>
           <h1 className="font-heading font-black text-5xl md:text-8xl mb-6 text-white leading-tight">BSJ EVENTS</h1>

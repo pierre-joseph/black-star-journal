@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 export function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [dark, setDark] = useState(() => {
     if (typeof window === 'undefined') return false;
     const savedPreference = localStorage.getItem('bsj-dark');
@@ -61,13 +60,6 @@ export function Navbar() {
 
         {/* Mobile Menu Toggle */}
         <div className="flex items-center gap-2 md:hidden">
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="p-2 rounded-full hover:bg-muted transition-colors text-foreground"
-            aria-label="Search"
-          >
-            <Search className="h-4 w-4" />
-          </button>
           <button
             onClick={() => setDark(!dark)}
             className="p-2 rounded-full hover:bg-muted transition-colors text-foreground"

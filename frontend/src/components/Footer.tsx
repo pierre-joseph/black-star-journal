@@ -18,21 +18,21 @@ export function Footer() {
   };
 
   return (
-    <footer className="w-full bg-slate-900 text-white py-12 mt-auto">
+    <footer className="w-full bg-black text-white py-12 mt-auto border-t border-white/10">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-8">
           {/* Links */}
           <div className="flex gap-6 flex-wrap justify-center">
-            <a href="/#mission" onClick={scrollToMission} className="hover:text-gray-300 font-medium uppercase tracking-wider text-sm cursor-pointer">About Us</a>
-            <Link to="/sections" className="hover:text-gray-300 font-medium uppercase tracking-wider text-sm">Sections</Link>
-            <Link to="/events" className="hover:text-gray-300 font-medium uppercase tracking-wider text-sm">Events</Link>
-            <Link to="/archives" className="hover:text-gray-300 font-medium uppercase tracking-wider text-sm">Archives</Link>
+            <a href="/#mission" onClick={scrollToMission} className="hover:text-[#f97316] font-medium uppercase tracking-wider text-sm cursor-pointer">About Us</a>
+            <Link to="/sections" className="hover:text-[#f97316] font-medium uppercase tracking-wider text-sm">Sections</Link>
+            <Link to="/events" className="hover:text-[#f97316] font-medium uppercase tracking-wider text-sm">Events</Link>
+            <Link to="/archives" className="hover:text-[#f97316] font-medium uppercase tracking-wider text-sm">Archives</Link>
           </div>
 
           {/* Socials */}
           <div className="flex gap-4">
-            <a href="https://www.linkedin.com/company/the-black-star-journal/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors" aria-label="LinkedIn"><FaLinkedin size={24} /></a>
-            <a href="https://www.instagram.com/theblackstarjournal/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors" aria-label="Instagram"><FaInstagram size={24} /></a>
+            <a href="https://www.linkedin.com/company/the-black-star-journal/" target="_blank" rel="noopener noreferrer" className="hover:text-[#f97316] transition-colors" aria-label="LinkedIn"><FaLinkedin size={24} /></a>
+            <a href="https://www.instagram.com/theblackstarjournal/" target="_blank" rel="noopener noreferrer" className="hover:text-[#f97316] transition-colors" aria-label="Instagram"><FaInstagram size={24} /></a>
             <a href="mailto:blackstarjournal@brown.edu" className="hover:text-[#f97316] transition-colors" aria-label="Email"><FaEnvelope size={24} /></a>
           </div>
         </div>
@@ -40,7 +40,7 @@ export function Footer() {
         <div className="h-px bg-white/10 w-full mb-8" />
 
         <div className="text-center mb-6">
-          <span className="text-white/30 text-[11px] font-serif italic tracking-[0.25em] uppercase">— Never settle —</span>
+          <span className="text-white/30 text-[11px] font-serif italic tracking-[0.25em] uppercase">— Ever True —</span>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
