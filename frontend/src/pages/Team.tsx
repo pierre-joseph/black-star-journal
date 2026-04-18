@@ -311,14 +311,6 @@ export default function Team() {
           {/* Press links */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
-              href="https://www.bostonglobe.com/2022/04/04/metro/brown-university-students-launch-black-star-journal-document-black-joy-experiences/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 font-sans text-xs font-bold tracking-[0.15em] uppercase text-[#f97316] hover:underline"
-            >
-              Read the Boston Globe feature →
-            </a>
-            <a
               href="https://www.brownalumnimagazine.com/articles/2022-06-09/a-star-is-born"
               target="_blank"
               rel="noopener noreferrer"

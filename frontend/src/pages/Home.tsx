@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import PDFViewer from "@/components/PDFViewer";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { FadeIn } from "@/components/FadeIn";
 import { backendApiUrl, resolveR2AssetUrl } from "@/lib/api";
@@ -22,6 +20,23 @@ interface Issue {
   coverImage?: Media | string | null;
   fullPdf?: Media | string | null;
 }
+
+const getIssueRouteId = (issue?: Issue): string | null => {
+  if (!issue) {
+    return null;
+  }
+
+  const slug = issue.slug?.trim();
+  if (slug) {
+    return slug;
+  }
+
+  if (issue.issueNumber <= 0) {
+    return "special";
+  }
+
+  return String(issue.issueNumber).padStart(2, "0");
+};
 
 export default function Home() {
   usePageTitle();
@@ -98,13 +113,12 @@ export default function Home() {
     };
   }, []);
 
-  const [showPDF, setShowPDF] = useState(false);
-
   const latestIssue = issues[0];
   const latestIssueCoverUrl =
     resolveR2AssetUrl(latestIssue?.coverArtwork) ??
     resolveR2AssetUrl(latestIssue?.coverImage);
-  const latestIssuePdfUrl = resolveR2AssetUrl(latestIssue?.fullPdf);
+  const latestIssueRouteId = getIssueRouteId(latestIssue);
+  const latestIssuePath = latestIssueRouteId ? `/issues/${latestIssueRouteId}` : "/issues";
   const heroCoverUrl = resolveR2AssetUrl(heroMedia) ?? latestIssueCoverUrl;
 
   return (
@@ -160,13 +174,22 @@ export default function Home() {
           Amplifying Black voices. Celebrating Black excellence. Building community at Brown and RISD.
         </p>
         <div className="flex gap-3 sm:mb-1">
-          <button
-            onClick={() => document.getElementById('current-issue')
-              ?.scrollIntoView({ behavior: 'smooth' })}
-            className="bg-[#f97316] text-black font-sans text-[10px] font-black tracking-[0.18em] uppercase px-5 py-2.5 hover:bg-[#ea580c] transition-colors"
-          >
-            Read Current Issue
-          </button>
+          {latestIssue ? (
+            <a
+              href={latestIssuePath}
+              className="bg-[#f97316] text-black font-sans text-[10px] font-black tracking-[0.18em] uppercase px-5 py-2.5 hover:bg-[#ea580c] transition-colors"
+            >
+              Read Current Issue
+            </a>
+          ) : (
+            <button
+              type="button"
+              disabled
+              className="bg-[#f97316] text-black font-sans text-[10px] font-black tracking-[0.18em] uppercase px-5 py-2.5 opacity-60 cursor-not-allowed"
+            >
+              Read Current Issue
+            </button>
+          )}
           <a
             href="/issues"
             className="border border-white/30 text-white font-sans text-[10px] tracking-[0.18em] uppercase px-5 py-2.5 hover:border-white hover:text-white transition-colors"
@@ -244,14 +267,6 @@ export default function Home() {
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <a
-                href="https://www.bostonglobe.com/2022/04/04/metro/brown-university-students-launch-black-star-journal-document-black-joy-experiences/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-sans text-xs font-bold tracking-[0.15em] uppercase text-[#f97316] hover:underline"
-              >
-                Boston Globe story →
-              </a>
-              <a
                 href="https://www.brownalumnimagazine.com/articles/2022-06-09/a-star-is-born"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -262,58 +277,6 @@ export default function Home() {
             </div>
           </div>
         </FadeIn>
-      </section>
-
-      {/* Featured Issue Section */}
-      <section id="current-issue" className="bg-muted/30 py-20 border-y border-border">
-        <div className="container mx-auto px-4">
-          <FadeIn direction="up">
-          <div className="text-center mb-12">
-            <span className="text-sm font-bold tracking-widest uppercase text-primary mb-2 block">Current Edition</span>
-            <h2 className="font-heading font-black text-4xl md:text-5xl">BSJ ISSUE #{latestIssue?.issueNumber ?? "--"}</h2>
-          </div>
-          </FadeIn>
-          
-          {!showPDF ? (
-            <FadeIn direction="up" delay={150}>
-            <div className="flex flex-col items-center gap-6 mb-12">
-              {latestIssueCoverUrl ? (
-                <img src={latestIssueCoverUrl} alt="Cover of the current issue" className="h-[800px] object-cover shadow-2xl" loading="lazy" />
-              ) : (
-                <div className="h-[800px] w-full max-w-[560px] bg-muted rounded-lg border border-border flex items-center justify-center text-muted-foreground">
-                  {loadingIssues ? "Loading current issue..." : "No current issue cover available"}
-                </div>
-              )}
-              <Button 
-                onClick={() => setShowPDF(true)}
-                disabled={!latestIssuePdfUrl || !latestIssue}
-                className="bg-[#f97316] hover:bg-[#ea580c] text-white font-bold px-8 py-6 text-lg"
-              >
-                Open & Read
-              </Button>
-            </div>
-            </FadeIn>
-          ) : (
-            <div className="max-w-7xl mx-auto">
-              {latestIssuePdfUrl ? (
-                <PDFViewer 
-                  pdfUrl={latestIssuePdfUrl} 
-                  initialPage={1}
-                  onClose={() => setShowPDF(false)} 
-                />
-              ) : null}
-              <div className="text-center mt-6">
-                <Button 
-                  onClick={() => setShowPDF(false)}
-                  variant="outline"
-                  className="font-semibold"
-                >
-                  Close Reader
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
       </section>
 
       {/* Get Involved CTA */}
