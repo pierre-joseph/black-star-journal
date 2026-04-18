@@ -122,7 +122,7 @@ export default function Home() {
   const heroCoverUrl = resolveR2AssetUrl(heroMedia) ?? latestIssueCoverUrl;
 
   return (
-    <div className="flex flex-col gap-12 pb-20 pt-10">
+    <div className="flex flex-col gap-12 pb-20">
       {/* Hero Section with CMS image background */}
       <section className="relative overflow-hidden h-[90vh] min-h-[600px]">
 
