@@ -303,22 +303,12 @@ export default function IssuePage() {
         {/* Issue Details */}
         <div className="grid md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-heading font-bold text-sm uppercase tracking-widest mb-2 text-muted-foreground">
-              Issue Number
-            </h3>
+            <h3 className="font-heading font-bold text-sm uppercase tracking-widest mb-2 text-muted-foreground">Issue</h3>
             <p className="text-2xl font-bold">{issueLabel}</p>
           </div>
           <div>
-            <h3 className="font-heading font-bold text-sm uppercase tracking-widest mb-2 text-muted-foreground">
-              Publication Date
-            </h3>
-            <p className="text-2xl font-bold">{published.month}</p>
-          </div>
-          <div>
-            <h3 className="font-heading font-bold text-sm uppercase tracking-widest mb-2 text-muted-foreground">
-              Year
-            </h3>
-            <p className="text-2xl font-bold">{published.year}</p>
+            <h3 className="font-heading font-bold text-sm uppercase tracking-widest mb-2 text-muted-foreground">Published</h3>
+            <p className="text-2xl font-bold">{published.month} {published.year}</p>
           </div>
         </div>
 

@@ -124,7 +124,7 @@ export default function Events() {
 
         while (page <= totalPages) {
           const response = await fetch(
-            backendApiUrl(`/api/media?limit=100&depth=0&page=${page}&sort=alt`)
+            backendApiUrl(`/api/media?where[alt][like]=Event-&limit=100&depth=0&page=${page}&sort=alt`)
           );
 
           if (!response.ok) {

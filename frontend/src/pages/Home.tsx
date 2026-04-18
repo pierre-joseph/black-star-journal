@@ -171,9 +171,9 @@ export default function Home() {
       {/* Tagline + CTA row */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-6">
         <p className="font-serif text-lg leading-relaxed text-white/80 italic max-w-sm">
-          Amplifying Black voices. Celebrating Black excellence. Building community at Brown and RISD.
+          Amplifying Black voices.<br />Celebrating Black excellence.<br />Building community at Brown and RISD.
         </p>
-        <div className="flex gap-3 sm:mb-1">
+        <div className="flex gap-3 sm:self-center">
           {latestIssue ? (
             <a
               href={latestIssuePath}

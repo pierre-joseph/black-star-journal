@@ -23,7 +23,7 @@ const PUBLICATIONS_INFO = [
   },
   {
     id: "bop",
-    name: "BOP",
+    name: "Blacks on Paper",
     subtitle: "Blacks on Paper · 1972 - 1975",
     years: "1972 – 1975",
     color: "#1c1917",
