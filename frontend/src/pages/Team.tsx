@@ -11,7 +11,7 @@ const staffData = [
     id: "editors-in-chief",
     title: "Editors-in-Chief",
     members: [
-      { role: "Editor-in-Chief", name: "Nelsa Tiemtore" },
+      { role: "Editor-in-Chief", name: "Nelsa Tiemtoré" },
       { role: "Editor-in-Chief", name: "Kourtney Beauvais" }
     ]
   },

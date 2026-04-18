@@ -12,7 +12,7 @@ export const Media: CollectionConfig = {
   },
   upload: {
     staticDir: path.resolve(dirname, '../../media'),
-    mimeTypes: ['image/*', 'application/pdf'],
+    mimeTypes: ['image/*', 'application/pdf', 'video/mp4', 'video/webm', 'video/quicktime'],
   },
   fields: [
     {
@@ -27,8 +27,13 @@ export const Media: CollectionConfig = {
     {
       name: 'assetType',
       type: 'select',
+      admin: {
+        description:
+          'Homepage hero video is shown full-width behind the header—export at least 1920×1080, high bitrate (roughly 8–15 Mbps for H.264), or quality will look soft when scaled up.',
+      },
       options: [
         { label: 'General', value: 'general' },
+        { label: 'Homepage Hero Video', value: 'homepage-hero-video' },
         { label: 'Cover Artwork', value: 'cover-artwork' },
         { label: 'Inline Artwork', value: 'inline-artwork' },
         { label: 'Illustration', value: 'illustration' },

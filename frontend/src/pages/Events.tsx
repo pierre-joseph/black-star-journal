@@ -32,7 +32,7 @@ const EVENT_ITEMS: EventItem[] = [
     subtitle: "Showcasing Black student creativity and collaboration",
     payloadAltPrefix: "Event-Black-Star-Expo",
     blurb:
-      "The Black Star Expo is our celebration of Black artistry, scholarship, and innovation across campus. Through live showcases, conversations, and creative installations, this event brings students, alumni, and community members together to honor the range of Black expression at Brown.",
+      "The Black Star Expo is our celebration of Black artistry, scholarship, and innovation across campus. Through live showcases, conversations, and creative installations, this event brings students, alumni, and community members together to honor the range of Black expression at Brown and RISD.",
   },
   {
     id: "bsj-gala",
@@ -185,7 +185,7 @@ export default function Events() {
             </h2>
             <div className="w-16 h-1 bg-[#f97316] mb-8" />
             <p className="font-serif text-xl text-muted-foreground leading-relaxed">
-              BSJ events create space for celebration, reflection, and connection across Brown's Black community.
+              BSJ events create space for celebration, reflection, and connection across Brown and RISD's Black community.
               From formal evenings to community-centered gatherings, each moment extends our mission of amplifying
               Black voices and honoring Black life.
             </p>

@@ -173,7 +173,7 @@ export default function Home() {
                 <p
                   className="font-serif text-lg leading-relaxed text-white max-w-md bg-black/60 backdrop-blur-sm rounded-lg px-4 py-3 border border-black/80"
                 >
-                  Amplifying Black voices. Celebrating Black excellence. Building community at Brown.
+                  Amplifying Black voices. Celebrating Black excellence. Building community at Brown and RISD.
                 </p>
               </div>
             </div>
@@ -205,10 +205,10 @@ export default function Home() {
               <div className="w-24 h-1 bg-primary" />
             </div>
             <p className="font-serif text-xl italic leading-relaxed">
-              "The BSJ is a source of Black news, life, existence, and culture where Black voices on Brown's campus build community."
+              "The BSJ is a source of Black news, life, existence, and culture where Black voices on Brown's and RISD's campus communities."
             </p>
             <p className="font-serif text-lg leading-relaxed text-muted-foreground">
-              Founded in 2021, we are more than a publication—we are a safe space and platform dedicated to documenting the Black experience at Brown University. Through journalism, storytelling, and creative expression, we hold space for joy, resilience, struggle, and triumph.
+              Founded in 2021, we are more than a publication—we are a safe space and platform dedicated to documenting the Black experience at Brown University and RISD. Through journalism, storytelling, and creative expression, we hold space for joy, resilience, struggle, and triumph.
             </p>
             <p className="font-serif text-lg leading-relaxed text-muted-foreground">
               Every piece we publish is an act of reclamation and representation, building an archive of our own stories, told with the authenticity and care they deserve.

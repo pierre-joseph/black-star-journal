@@ -103,7 +103,7 @@ export default function BSJIssues() {
           <h1 className="font-heading font-black text-5xl md:text-8xl mb-6 text-white leading-tight">THE FULL BSJ ISSUES</h1>
           <div className="w-24 h-1 bg-white/40 mx-auto mb-6" />
           <p className="font-serif text-xl md:text-2xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-            Explore our collection of past issues — stories, art, and voices that have shaped our community at Brown.
+            Explore our collection of past issues — stories, art, and voices that have shaped our community at Brown and RISD.
           </p>
         </div>
       </section>

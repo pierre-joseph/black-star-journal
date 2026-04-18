@@ -2,7 +2,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Sun, Moon, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { SearchOverlay } from "@/components/SearchOverlay";
 
 export function Navbar() {
   const location = useLocation();
@@ -51,13 +50,6 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-            aria-label="Search"
-          >
-            <Search className="h-4 w-4" />
-          </button>
           <button
             onClick={() => setDark(!dark)}
             className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
@@ -111,7 +103,6 @@ export function Navbar() {
         </div>
       )}
     </nav>
-    <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

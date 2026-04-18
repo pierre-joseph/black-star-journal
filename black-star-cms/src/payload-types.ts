@@ -158,7 +158,10 @@ export interface Media {
   id: string;
   alt: string;
   caption?: string | null;
-  assetType?: ('general' | 'cover-artwork' | 'inline-artwork' | 'illustration') | null;
+  /**
+   * Homepage hero video is shown full-width behind the header—export at least 1920×1080, high bitrate (roughly 8–15 Mbps for H.264), or quality will look soft when scaled up.
+   */
+  assetType?: ('general' | 'homepage-hero-video' | 'cover-artwork' | 'inline-artwork' | 'illustration') | null;
   /**
    * Artist credit, for example Marie Auguste or Jessie Owusu.
    */
