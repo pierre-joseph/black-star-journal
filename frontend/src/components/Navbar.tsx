@@ -20,8 +20,8 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "HOME" },
     { href: "/team", label: "OUR TEAM" },
-    { href: "/issues", label: "BSJ ISSUES" },
-    { href: "/sections", label: "SECTIONS" },
+    { href: "/issues", label: "ISSUES" },
+    { href: "/sections", label: "ARTICLES" },
     { href: "/events", label: "EVENTS" },
     { href: "/archives", label: "ARCHIVES" }
   ];
