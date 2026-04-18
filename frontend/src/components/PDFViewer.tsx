@@ -3,7 +3,7 @@
 import '@/lib/pdfWorker';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Document, Page } from 'react-pdf';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Move, Keyboard } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Move, Keyboard, Maximize2, Minimize2 } from 'lucide-react';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -21,6 +21,8 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
   const [containerWidth, setContainerWidth] = useState(800);
   const [zoom, setZoom] = useState(1);
   const [showKeyHint, setShowKeyHint] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
 
   // Pan state for drag-to-pan when zoomed
   const [isPanning, setIsPanning] = useState(false);
@@ -48,6 +50,34 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
     window.addEventListener('error', onErr);
     return () => window.removeEventListener('error', onErr);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const updateMobileViewport = () => setIsMobileViewport(mediaQuery.matches);
+
+    updateMobileViewport();
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', updateMobileViewport);
+      return () => mediaQuery.removeEventListener('change', updateMobileViewport);
+    }
+
+    mediaQuery.addListener(updateMobileViewport);
+    return () => mediaQuery.removeListener(updateMobileViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!isFullscreen || typeof document === 'undefined') return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isFullscreen]);
 
   const file = useMemo(() => ({ url: pdfUrl }), [pdfUrl]);
 
@@ -77,17 +107,38 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
     return clamped % 2 === 0 ? clamped : clamped - 1;
   }, []);
 
+  const clampPage = useCallback((value: number, totalPages: number): number => {
+    const total = Math.max(totalPages, 1);
+    return Math.min(Math.max(1, value), total);
+  }, []);
+
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
-    setPageNumber(normalizeSpreadPage(initialPage, numPages));
+    setPageNumber(
+      isMobileViewport
+        ? clampPage(initialPage, numPages)
+        : normalizeSpreadPage(initialPage, numPages)
+    );
   };
 
+  useEffect(() => {
+    if (numPages < 1) return;
+
+    setPageNumber((prev) => (
+      isMobileViewport
+        ? clampPage(prev, numPages)
+        : normalizeSpreadPage(prev, numPages)
+    ));
+  }, [clampPage, isMobileViewport, normalizeSpreadPage, numPages]);
+
   const spreadGap = 4;
-  const basePageWidth = Math.max(Math.min((containerWidth - 140 - spreadGap) / 2, 520), 140);
+  const spreadPageWidth = Math.max(Math.min((containerWidth - 140 - spreadGap) / 2, 520), 140);
+  const singlePageWidth = Math.max(Math.min(containerWidth - 24, 680), 140);
+  const basePageWidth = isMobileViewport ? singlePageWidth : spreadPageWidth;
   const pageWidth = basePageWidth * zoom;
 
   // Book spread layout (first and last pages are single pages)
-  const isSinglePage = numPages <= 1 || pageNumber === 1 || pageNumber === numPages;
+  const isSinglePage = isMobileViewport || numPages <= 1 || pageNumber === 1 || pageNumber === numPages;
   const isLeftPage = pageNumber % 2 === 0;
   const leftPageNum = isSinglePage ? pageNumber : isLeftPage ? pageNumber : pageNumber - 1;
   const rightPageNum = isSinglePage ? null : Math.min(leftPageNum + 1, numPages);
@@ -106,16 +157,26 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
   const previousPage = useCallback(() => {
     if (pageNumber <= 1) return;
 
+    if (isMobileViewport) {
+      changePage(-1);
+      return;
+    }
+
     if (pageNumber === numPages && numPages > 1) {
       changePage(-1);
       return;
     }
 
     changePage(-2);
-  }, [changePage, numPages, pageNumber]);
+  }, [changePage, isMobileViewport, numPages, pageNumber]);
 
   const nextPage = useCallback(() => {
     if (pageNumber >= numPages) return;
+
+    if (isMobileViewport) {
+      changePage(1);
+      return;
+    }
 
     if (pageNumber === 1) {
       changePage(1);
@@ -128,17 +189,22 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
     }
 
     changePage(2);
-  }, [changePage, numPages, pageNumber]);
+  }, [changePage, isMobileViewport, numPages, pageNumber]);
 
   // Keyboard navigation
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+        return;
+      }
+
       if (e.key === 'ArrowLeft') { previousPage(); setShowKeyHint(false); }
       if (e.key === 'ArrowRight') { nextPage(); setShowKeyHint(false); }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [previousPage, nextPage]);
+  }, [isFullscreen, nextPage, previousPage]);
 
   // Auto-hide keyboard hint after 5 seconds
   useEffect(() => {
@@ -207,8 +273,15 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
   const isZoomed = zoom > 1;
 
   return (
-    <div ref={containerRef} className="w-full bg-gradient-to-b from-stone-100 to-stone-200 rounded-xl shadow-2xl overflow-hidden">
-      <div className="relative flex flex-col min-h-[500px]">
+    <div
+      ref={containerRef}
+      className={`w-full bg-gradient-to-b from-stone-100 to-stone-200 overflow-hidden transition-all ${
+        isFullscreen
+          ? 'fixed inset-0 z-[90] rounded-none shadow-none'
+          : 'rounded-xl shadow-2xl'
+      }`}
+    >
+      <div className={`relative flex flex-col ${isFullscreen ? 'h-screen' : 'min-h-[500px]'}`}>
 
         {/* Top bar: BSJ exit icon (left) + zoom controls (right) */}
         <div className="sticky top-0 z-40 flex flex-col">
@@ -232,6 +305,15 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
           <div className="pointer-events-auto flex items-center gap-2">
             {/* Zoom controls */}
             <div className="flex items-center gap-1 bg-black/60 rounded-full shadow-lg px-2 py-1.5">
+              <button
+                onClick={() => setIsFullscreen((value) => !value)}
+                className="h-8 w-8 flex items-center justify-center text-white hover:bg-white/20 rounded-full transition-colors"
+                aria-label={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
+                title={isFullscreen ? 'Exit full screen' : 'Full screen'}
+              >
+                {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </button>
+              <div className="h-5 w-px bg-white/20" />
               <button
                 onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.15).toFixed(2)))}
                 className="h-8 w-8 flex items-center justify-center text-white hover:bg-white/20 rounded-full transition-colors"
@@ -362,7 +444,11 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
               }`}
               style={{
                 width: `${containerWidth}px`,
-                maxHeight: isZoomed ? '80vh' : undefined,
+                maxHeight: isZoomed
+                  ? isFullscreen
+                    ? 'calc(100vh - 116px)'
+                    : '80vh'
+                  : undefined,
                 display: isZoomed ? 'block' : 'flex',
                 justifyContent: isZoomed ? undefined : 'center',
               }}
