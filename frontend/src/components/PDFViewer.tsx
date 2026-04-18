@@ -21,7 +21,7 @@ export default function PDFViewer({ pdfUrl, onClose, initialPage = 1 }: PDFViewe
   const [containerWidth, setContainerWidth] = useState(800);
   const [zoom, setZoom] = useState(1);
   const [showKeyHint, setShowKeyHint] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(true);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
 
   // Pan state for drag-to-pan when zoomed
