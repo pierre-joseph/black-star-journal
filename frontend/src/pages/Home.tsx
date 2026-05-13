@@ -44,6 +44,7 @@ export default function Home() {
   const [heroMedia, setHeroMedia] = useState<Media | null>(null);
   const [homeBackgroundUrl, setHomeBackgroundUrl] = useState<string | null>(null);
   const [loadingIssues, setLoadingIssues] = useState(true);
+  const [showNewPopup, setShowNewPopup] = useState<boolean>(false);
 
   useEffect(() => {
     let mounted = true;
@@ -121,6 +122,16 @@ export default function Home() {
   const latestIssuePath = latestIssueRouteId ? `/issues/${latestIssueRouteId}` : "/issues";
   const heroCoverUrl = resolveR2AssetUrl(heroMedia) ?? latestIssueCoverUrl;
 
+  // show "new issue" badge/popup when there's a latest issue the user hasn't seen
+  useEffect(() => {
+    if (!latestIssue) return;
+    const key = `bsj_seen_issue_${latestIssue.id}`;
+    const seen = localStorage.getItem(key) === '1';
+    if (!seen) {
+      setShowNewPopup(true);
+    }
+  }, [latestIssue]);
+
   return (
     <div className="flex flex-col gap-12 pb-20">
       {/* Hero Section with CMS image background */}
@@ -144,6 +155,49 @@ export default function Home() {
   {/* Hero Content */}
   <div className="relative z-30 h-full flex flex-col justify-end pb-16 md:pb-20">
     <div className="container mx-auto px-6 md:px-10">
+      {showNewPopup && latestIssue && (
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="absolute right-6 top-6 z-40 w-[min(90vw,22rem)] rounded-2xl border border-white/15 bg-black/75 p-4 text-white shadow-2xl backdrop-blur-md"
+        >
+          <div className="flex items-start gap-3">
+            <div className="mt-1 h-3 w-3 rounded-full bg-[#f97316] shadow-[0_0_0_8px_rgba(249,115,22,0.15)]" />
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-black tracking-[0.28em] uppercase text-[#f97316]">New issue</p>
+              <h2 className="mt-1 text-lg font-black leading-tight">{latestIssue.title}</h2>
+              <p className="mt-1 text-sm text-white/75">The latest issue is live now. Read it below.</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a
+                  href={latestIssuePath}
+                  onClick={() => {
+                    if (latestIssue) {
+                      localStorage.setItem(`bsj_seen_issue_${latestIssue.id}`, '1');
+                      setShowNewPopup(false);
+                    }
+                  }}
+                  className="inline-flex items-center rounded-full bg-[#f97316] px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-black transition-colors hover:bg-[#ea580c]"
+                >
+                  Open issue
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (latestIssue) {
+                      localStorage.setItem(`bsj_seen_issue_${latestIssue.id}`, '1');
+                    }
+                    setShowNewPopup(false);
+                  }}
+                  className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-white/80 transition-colors hover:border-white/40 hover:text-white"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Eyebrow */}
       <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-[#f97316] mb-4">
@@ -180,6 +234,7 @@ export default function Home() {
               className="bg-[#f97316] text-black font-sans text-[10px] font-black tracking-[0.18em] uppercase px-5 py-2.5 hover:bg-[#ea580c] transition-colors"
             >
               Read Current Issue
+                <span className="sr-only">New issue available</span>
             </a>
           ) : (
             <button
